@@ -53,6 +53,27 @@ foreach ($parser->parse('example.csv', $schema, false) as $row) {
 }
 ```
 
+The example above shows how to use a `Schema` object to configure how a string from a line of comma-separated values is parsed into an array element:
+
+* `1` refers to the position of the string in the line of comma-separated values
+* `'a'` specifies the key for the value in the associative array that is generated for each row
+* `Type::integer()` specifies the type that should be used to store the value in the associative array that is generated for each row
+
+The following types are available:
+
+* boolean (`Type::boolean()`; uses `(bool)` type cast)
+* integer (`Type::integer()`; uses `(int)` type cast)
+* float (`Type::float()`; uses `(float)` type cast)
+* string (`Type::string()`)
+
+The `Parser::parse()` method requires two arguments and accepts an optional third argument:
+
+* The first argument, `$filename`, is the path to the CSV file that should be parsed
+* The second argument, `$schema`, is the `Schema` object we discussed above
+* The third argument, `$ignoreFirstLine` (default: `true`), controls whether the first line of the CSV file should be ignored
+
+Running the example shown above prints the output shown below:
+
 ```
 array(3) {
   ["a"]=>
