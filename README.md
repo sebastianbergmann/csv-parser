@@ -26,7 +26,7 @@ composer require --dev sebastian/csv-parser
 #### `example.csv`
 
 ```csv
-1,2,3
+1,2,3,1,0
 ```
 
 ```php
@@ -37,9 +37,11 @@ use SebastianBergmann\CsvParser\ColumnDefinition;
 
 $schema = Schema::from(
     [
-        1 => ColumnDefinition::from('foo', Type::integer()),
-        2 => ColumnDefinition::from('bar', Type::float()),
-        3 => ColumnDefinition::from('baz', Type::string()),
+        1 => ColumnDefinition::from('a', Type::integer()),
+        2 => ColumnDefinition::from('b', Type::float()),
+        3 => ColumnDefinition::from('c', Type::string()),
+        4 => ColumnDefinition::from('d', Type::boolean()),
+        5 => ColumnDefinition::from('e', Type::boolean()),
     ]
 );
 
@@ -52,11 +54,15 @@ foreach ($parser->parse('example.csv', $schema) as $row) {
 
 ```
 array(3) {
-  ["foo"]=>
+  ["a"]=>
   int(1)
-  ["bar"]=>
+  ["b"]=>
   float(2)
-  ["baz"]=>
+  ["c"]=>
   string(1) "3"
+  ["d"]=>
+  bool(true)
+  ["e"]=>
+  bool(false)
 }
 ```
