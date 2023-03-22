@@ -36,9 +36,11 @@ use SebastianBergmann\CsvParser\Schema;
 use SebastianBergmann\CsvParser\ColumnDefinition;
 
 $schema = Schema::from(
-    ColumnDefinition::from('foo', Type::integer()),
-    ColumnDefinition::from('bar', Type::float()),
-    ColumnDefinition::from('baz', Type::string()),
+    [
+        1 => ColumnDefinition::from('foo', Type::integer()),
+        2 => ColumnDefinition::from('bar', Type::float()),
+        3 => ColumnDefinition::from('baz', Type::string()),
+    ]
 );
 
 $parser = new Parser;
