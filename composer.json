@@ -1,0 +1,39 @@
+{
+    "name": "sebastian/csv-parser",
+    "description": "Library for type-safe parsing of CSV files",
+    "type": "library",
+    "homepage": "https://github.com/sebastianbergmann/csv-parser",
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Sebastian Bergmann",
+            "email": "sebastian@phpunit.de",
+            "role": "lead"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/sebastianbergmann/csv-parser/issues",
+        "security": "https://github.com/sebastianbergmann/csv-parser/security/policy"
+    },
+    "prefer-stable": true,
+    "require": {
+        "php": ">=8.2"
+    },
+    "config": {
+        "platform": {
+            "php": "8.2.0"
+        },
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "autoload": {
+        "classmap": [
+            "src/"
+        ]
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.0-dev"
+        }
+    }
+}

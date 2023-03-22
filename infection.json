@@ -1,0 +1,17 @@
+{
+    "source": {
+        "directories": [
+            "src"
+        ]
+    },
+    "phpUnit": {
+        "customPath": "tools/phpunit"
+    },
+    "bootstrap": "vendor/autoload.php",
+    "mutators": {
+        "@default": true
+    },
+    "minMsi": 100,
+    "minCoveredMsi": 100,
+    "testFrameworkOptions": "--testsuite=unit"
+}
