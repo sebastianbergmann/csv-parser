@@ -26,14 +26,19 @@ composer require --dev sebastian/csv-parser
 #### `example.csv`
 
 ```csv
+a,b,c,d,e
 1,2,3,1,0
 ```
 
 ```php
 <?php declare(strict_types=1);
+
+require_once __DIR__ . '/autoload.php';
+
+use SebastianBergmann\CsvParser\ColumnDefinition;
 use SebastianBergmann\CsvParser\Parser;
 use SebastianBergmann\CsvParser\Schema;
-use SebastianBergmann\CsvParser\ColumnDefinition;
+use SebastianBergmann\CsvParser\Type;
 
 $schema = Schema::from(
     [
