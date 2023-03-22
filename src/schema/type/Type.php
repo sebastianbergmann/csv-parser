@@ -11,6 +11,11 @@ namespace SebastianBergmann\CsvParser;
 
 abstract readonly class Type
 {
+    public static function boolean(): self
+    {
+        return new BooleanType;
+    }
+
     public static function integer(): self
     {
         return new IntegerType;
@@ -26,13 +31,13 @@ abstract readonly class Type
         return new StringType;
     }
 
-    public static function boolean(): self
-    {
-        return new BooleanType;
-    }
-
     private function __construct()
     {
+    }
+
+    public function isBoolean(): bool
+    {
+        return false;
     }
 
     public function isInteger(): bool
@@ -46,11 +51,6 @@ abstract readonly class Type
     }
 
     public function isString(): bool
-    {
-        return false;
-    }
-
-    public function isBoolean(): bool
     {
         return false;
     }
