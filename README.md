@@ -48,7 +48,7 @@ $schema = Schema::from(
 
 $parser = new Parser;
 
-foreach ($parser->parse('example.csv', $schema) as $row) {
+foreach ($parser->parse('example.csv', $schema, false) as $row) {
     var_dump($row);
 }
 ```
