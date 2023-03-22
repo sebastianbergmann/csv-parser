@@ -11,6 +11,8 @@ namespace SebastianBergmann\CsvParser;
 
 /**
  * @psalm-immutable
+ *
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise for this library
  */
 final class BooleanType extends Type
 {
