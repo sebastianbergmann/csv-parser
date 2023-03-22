@@ -23,6 +23,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(FloatType::class)]
 #[UsesClass(IntegerType::class)]
 #[UsesClass(StringType::class)]
+#[UsesClass(BooleanType::class)]
 #[Small]
 final class ParserTest extends TestCase
 {
@@ -35,6 +36,8 @@ final class ParserTest extends TestCase
                         'foo' => 1,
                         'bar' => 2.0,
                         'baz' => '3',
+                        'boo' => true,
+                        'boz' => false,
                     ],
                 ],
                 Schema::from(
@@ -42,6 +45,8 @@ final class ParserTest extends TestCase
                         1 => ColumnDefinition::from('foo', Type::integer()),
                         2 => ColumnDefinition::from('bar', Type::float()),
                         3 => ColumnDefinition::from('baz', Type::string()),
+                        4 => ColumnDefinition::from('boo', Type::boolean()),
+                        5 => ColumnDefinition::from('boz', Type::boolean()),
                     ]
                 ),
                 __DIR__ . '/../fixture/fixture.csv',
