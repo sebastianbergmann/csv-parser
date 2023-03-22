@@ -34,6 +34,7 @@ composer require --dev sebastian/csv-parser
 use SebastianBergmann\CsvParser\Parser;
 use SebastianBergmann\CsvParser\Schema;
 use SebastianBergmann\CsvParser\ColumnDefinition;
+use SebastianBergmann\CsvParser\Type;
 
 $schema = Schema::from(
     [
