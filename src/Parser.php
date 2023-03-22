@@ -34,16 +34,16 @@ final class Parser
             foreach ($schema->columnDefinitions() as $column => $definition) {
                 $value = $line[$column - 1];
 
+                if ($definition->type()->isBoolean()) {
+                    $value = (bool) $value;
+                }
+
                 if ($definition->type()->isInteger()) {
                     $value = (int) $value;
                 }
 
                 if ($definition->type()->isFloat()) {
                     $value = (float) $value;
-                }
-
-                if ($definition->type()->isBoolean()) {
-                    $value = (bool) $value;
                 }
 
                 $data[$definition->name()] = $value;
