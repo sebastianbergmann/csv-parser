@@ -9,6 +9,9 @@
  */
 namespace SebastianBergmann\CsvParser;
 
+/**
+ * @psalm-immutable
+ */
 final class BooleanType extends Type
 {
     public function isBoolean(): bool

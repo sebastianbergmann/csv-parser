@@ -9,6 +9,9 @@
  */
 namespace SebastianBergmann\CsvParser;
 
+/**
+ * @psalm-immutable
+ */
 final class FloatType extends Type
 {
     public function isFloat(): bool

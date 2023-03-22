@@ -9,6 +9,9 @@
  */
 namespace SebastianBergmann\CsvParser;
 
+/**
+ * @psalm-immutable
+ */
 final class StringType extends Type
 {
     public function isString(): bool
