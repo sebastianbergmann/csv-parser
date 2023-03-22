@@ -20,4 +20,9 @@ final class BooleanType extends Type
     {
         return true;
     }
+
+    public function cast(string $value): bool
+    {
+        return (bool) $value;
+    }
 }

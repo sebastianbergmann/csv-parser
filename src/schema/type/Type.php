@@ -59,4 +59,6 @@ abstract class Type
     {
         return false;
     }
+
+    abstract public function cast(string $value): mixed;
 }

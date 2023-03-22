@@ -20,4 +20,9 @@ final class StringType extends Type
     {
         return true;
     }
+
+    public function cast(string $value): string
+    {
+        return $value;
+    }
 }

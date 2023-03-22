@@ -20,4 +20,9 @@ final class IntegerType extends Type
     {
         return true;
     }
+
+    public function cast(string $value): int
+    {
+        return (int) $value;
+    }
 }

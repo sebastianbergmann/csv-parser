@@ -35,21 +35,7 @@ final class Parser
             $line = str_getcsv($line);
 
             foreach ($schema->columnDefinitions() as $column => $definition) {
-                $value = $line[$column - 1];
-
-                if ($definition->type()->isBoolean()) {
-                    $value = (bool) $value;
-                }
-
-                if ($definition->type()->isInteger()) {
-                    $value = (int) $value;
-                }
-
-                if ($definition->type()->isFloat()) {
-                    $value = (float) $value;
-                }
-
-                $data[$definition->name()] = $value;
+                $data[$definition->name()] = $definition->type()->cast($line[$column - 1] ?? '');
             }
 
             yield $data;

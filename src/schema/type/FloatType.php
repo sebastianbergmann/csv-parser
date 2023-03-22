@@ -20,4 +20,9 @@ final class FloatType extends Type
     {
         return true;
     }
+
+    public function cast(string $value): float
+    {
+        return (float) $value;
+    }
 }
