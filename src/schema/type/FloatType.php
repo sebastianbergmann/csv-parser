@@ -9,7 +9,7 @@
  */
 namespace SebastianBergmann\CsvParser;
 
-final readonly class FloatType extends Type
+final class FloatType extends Type
 {
     public function isFloat(): bool
     {

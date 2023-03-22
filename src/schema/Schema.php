@@ -14,7 +14,7 @@ final class Schema
     /**
      * @psalm-var array<int, ColumnDefinition>
      */
-    private array $columnDefinitions;
+    private readonly array $columnDefinitions;
 
     /**
      * @psalm-param array<int, ColumnDefinition> $columnDefinitions

@@ -9,7 +9,7 @@
  */
 namespace SebastianBergmann\CsvParser;
 
-abstract readonly class Type
+abstract class Type
 {
     public static function boolean(): self
     {

@@ -9,7 +9,7 @@
  */
 namespace SebastianBergmann\CsvParser;
 
-final readonly class StringType extends Type
+final class StringType extends Type
 {
     public function isString(): bool
     {

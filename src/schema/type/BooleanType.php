@@ -9,7 +9,7 @@
  */
 namespace SebastianBergmann\CsvParser;
 
-final readonly class BooleanType extends Type
+final class BooleanType extends Type
 {
     public function isBoolean(): bool
     {

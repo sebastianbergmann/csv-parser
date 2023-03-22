@@ -9,10 +9,10 @@
  */
 namespace SebastianBergmann\CsvParser;
 
-final readonly class ColumnDefinition
+final class ColumnDefinition
 {
-    private string $name;
-    private Type $type;
+    private readonly string $name;
+    private readonly Type $type;
 
     public static function from(string $name, Type $type): self
     {

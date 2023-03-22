@@ -9,7 +9,7 @@
  */
 namespace SebastianBergmann\CsvParser;
 
-final readonly class IntegerType extends Type
+final class IntegerType extends Type
 {
     public function isInteger(): bool
     {
