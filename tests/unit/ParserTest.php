@@ -33,20 +33,20 @@ final class ParserTest extends TestCase
             'all columns' => [
                 [
                     [
-                        'foo' => 1,
-                        'bar' => 2.0,
-                        'baz' => '3',
-                        'boo' => true,
-                        'boz' => false,
+                        'a' => 1,
+                        'b' => 2.0,
+                        'c' => '3',
+                        'd' => true,
+                        'e' => false,
                     ],
                 ],
                 Schema::from(
                     [
-                        1 => ColumnDefinition::from('foo', Type::integer()),
-                        2 => ColumnDefinition::from('bar', Type::float()),
-                        3 => ColumnDefinition::from('baz', Type::string()),
-                        4 => ColumnDefinition::from('boo', Type::boolean()),
-                        5 => ColumnDefinition::from('boz', Type::boolean()),
+                        1 => ColumnDefinition::from('a', Type::integer()),
+                        2 => ColumnDefinition::from('b', Type::float()),
+                        3 => ColumnDefinition::from('c', Type::string()),
+                        4 => ColumnDefinition::from('d', Type::boolean()),
+                        5 => ColumnDefinition::from('e', Type::boolean()),
                     ]
                 ),
                 __DIR__ . '/../fixture/fixture.csv',
@@ -55,12 +55,12 @@ final class ParserTest extends TestCase
             'subset of columns' => [
                 [
                     [
-                        'bar' => 2.0,
+                        'b' => 2.0,
                     ],
                 ],
                 Schema::from(
                     [
-                        2 => ColumnDefinition::from('bar', Type::float()),
+                        2 => ColumnDefinition::from('b', Type::float()),
                     ]
                 ),
                 __DIR__ . '/../fixture/fixture.csv',
