@@ -11,6 +11,7 @@ namespace SebastianBergmann\CsvParser;
 
 use function iterator_to_array;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
@@ -25,27 +26,53 @@ use PHPUnit\Framework\TestCase;
 #[Small]
 final class ParserTest extends TestCase
 {
-    public function test_Parses_CSV_file_according_to_schema(): void
+    public static function provider(): array
     {
-        $schema = Schema::from(
-            ColumnDefinition::from('foo', Type::integer()),
-            ColumnDefinition::from('bar', Type::float()),
-            ColumnDefinition::from('baz', Type::string()),
-        );
+        return [
+            'all columns' => [
+                [
+                    [
+                        'foo' => 1,
+                        'bar' => 2.0,
+                        'baz' => '3',
+                    ],
+                ],
+                Schema::from(
+                    [
+                        1 => ColumnDefinition::from('foo', Type::integer()),
+                        2 => ColumnDefinition::from('bar', Type::float()),
+                        3 => ColumnDefinition::from('baz', Type::string()),
+                    ]
+                ),
+                __DIR__ . '/../fixture/fixture.csv',
+            ],
 
+            'subset of columns' => [
+                [
+                    [
+                        'bar' => 2.0,
+                    ],
+                ],
+                Schema::from(
+                    [
+                        2 => ColumnDefinition::from('bar', Type::float()),
+                    ]
+                ),
+                __DIR__ . '/../fixture/fixture.csv',
+            ],
+        ];
+    }
+
+    #[DataProvider('provider')]
+    public function test_Parses_CSV_file_according_to_schema(array $expected, Schema $schema, string $filename): void
+    {
         $parser = new Parser;
 
         $this->assertSame(
-            [
-                [
-                    'foo' => 1,
-                    'bar' => 2.0,
-                    'baz' => '3',
-                ],
-            ],
+            $expected,
             iterator_to_array(
                 $parser->parse(
-                    __DIR__ . '/../fixture/fixture.csv',
+                    $filename,
                     $schema
                 )
             )

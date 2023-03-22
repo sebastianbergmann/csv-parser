@@ -28,24 +28,21 @@ final class Parser
         }
 
         foreach ($lines as $line) {
-            $data  = [];
-            $line  = str_getcsv($line);
-            $index = 0;
+            $data = [];
+            $line = str_getcsv($line);
 
-            foreach ($schema->columns() as $column) {
-                $value = $line[$index];
+            foreach ($schema->columnDefinitions() as $column => $definition) {
+                $value = $line[$column - 1];
 
-                if ($column->type()->isInteger()) {
+                if ($definition->type()->isInteger()) {
                     $value = (int) $value;
                 }
 
-                if ($column->type()->isFloat()) {
+                if ($definition->type()->isFloat()) {
                     $value = (float) $value;
                 }
 
-                $data[$column->name()] = $value;
-
-                $index++;
+                $data[$definition->name()] = $value;
             }
 
             yield $data;

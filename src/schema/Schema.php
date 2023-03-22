@@ -12,28 +12,31 @@ namespace SebastianBergmann\CsvParser;
 final class Schema
 {
     /**
-     * @psalm-var list<ColumnDefinition>
+     * @psalm-var array<int, ColumnDefinition>
      */
-    private array $columns;
+    private array $columnDefinitions;
 
-    public static function from(ColumnDefinition ...$columns): self
+    /**
+     * @psalm-param array<int, ColumnDefinition> $columnDefinitions
+     */
+    public static function from(array $columnDefinitions): self
     {
-        return new self($columns);
+        return new self($columnDefinitions);
     }
 
     /**
-     * @psalm-param list<ColumnDefinition> $columns
+     * @psalm-param array<int, ColumnDefinition> $columnDefinitions
      */
-    private function __construct(array $columns)
+    private function __construct(array $columnDefinitions)
     {
-        $this->columns = $columns;
+        $this->columnDefinitions = $columnDefinitions;
     }
 
     /**
-     * @psalm-return list<ColumnDefinition>
+     * @psalm-return array<int, ColumnDefinition>
      */
-    public function columns(): array
+    public function columnDefinitions(): array
     {
-        return $this->columns;
+        return $this->columnDefinitions;
     }
 }

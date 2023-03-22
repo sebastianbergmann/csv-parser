@@ -23,9 +23,10 @@ final class SchemaTest extends TestCase
     public function testHasColumnDefinitions(): void
     {
         $column = ColumnDefinition::from('name', Type::integer());
-        $schema = Schema::from($column);
+        $schema = Schema::from([1 => $column]);
 
-        $this->assertCount(1, $schema->columns());
-        $this->assertContains($column, $schema->columns());
+        $this->assertCount(1, $schema->columnDefinitions());
+        $this->assertArrayHasKey(1, $schema->columnDefinitions());
+        $this->assertContains($column, $schema->columnDefinitions());
     }
 }
