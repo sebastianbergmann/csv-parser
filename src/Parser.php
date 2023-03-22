@@ -42,6 +42,10 @@ final class Parser
                     $value = (float) $value;
                 }
 
+                if ($definition->type()->isBoolean()) {
+                    $value = (bool) $value;
+                }
+
                 $data[$definition->name()] = $value;
             }
 

@@ -26,6 +26,11 @@ abstract readonly class Type
         return new StringType;
     }
 
+    public static function boolean(): self
+    {
+        return new BooleanType;
+    }
+
     private function __construct()
     {
     }
@@ -41,6 +46,11 @@ abstract readonly class Type
     }
 
     public function isString(): bool
+    {
+        return false;
+    }
+
+    public function isBoolean(): bool
     {
         return false;
     }

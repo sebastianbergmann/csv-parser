@@ -17,6 +17,7 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(IntegerType::class)]
 #[CoversClass(FloatType::class)]
 #[CoversClass(StringType::class)]
+#[CoversClass(BooleanType::class)]
 #[Small]
 final class TypeTest extends TestCase
 {
@@ -27,6 +28,7 @@ final class TypeTest extends TestCase
         $this->assertTrue($type->isInteger());
         $this->assertFalse($type->isFloat());
         $this->assertFalse($type->isString());
+        $this->assertFalse($type->isBoolean());
     }
 
     public function testCanBeFloat(): void
@@ -36,6 +38,7 @@ final class TypeTest extends TestCase
         $this->assertTrue($type->isFloat());
         $this->assertFalse($type->isInteger());
         $this->assertFalse($type->isString());
+        $this->assertFalse($type->isBoolean());
     }
 
     public function testCanBeString(): void
@@ -43,6 +46,17 @@ final class TypeTest extends TestCase
         $type = Type::string();
 
         $this->assertTrue($type->isString());
+        $this->assertFalse($type->isInteger());
+        $this->assertFalse($type->isFloat());
+        $this->assertFalse($type->isBoolean());
+    }
+
+    public function testCanBeBoolean(): void
+    {
+        $type = Type::boolean();
+
+        $this->assertTrue($type->isBoolean());
+        $this->assertFalse($type->isString());
         $this->assertFalse($type->isInteger());
         $this->assertFalse($type->isFloat());
     }
