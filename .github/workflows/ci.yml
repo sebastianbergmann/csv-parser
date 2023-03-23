@@ -105,4 +105,4 @@ jobs:
         run: "./tools/composer update --no-ansi --no-interaction --no-progress"
 
       - name: "Run mutation tests with Infection"
-        run: "./tools/infection --only-covered"
+        run: "./tools/infection"

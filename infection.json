@@ -9,7 +9,12 @@
     },
     "bootstrap": "vendor/autoload.php",
     "mutators": {
-        "@default": true
+        "@default": true,
+        "Continue_": {
+            "ignore": [
+                "SebastianBergmann\\CsvParser\\Parser::generator"
+            ]
+        }
     },
     "minMsi": 100,
     "minCoveredMsi": 100,
