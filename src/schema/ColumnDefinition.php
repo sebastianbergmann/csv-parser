@@ -50,7 +50,7 @@ final class ColumnDefinition
     }
 
     /**
-     * @psalm-param list<?string> $input
+     * @psalm-param list<string> $input
      * @psalm-param array<string, mixed> $output
      *
      * @throws OutOfBoundsException
@@ -64,10 +64,6 @@ final class ColumnDefinition
         }
 
         $value = $input[$this->position - 1];
-
-        if ($value === null) {
-            throw new InvalidValueException('Input array has element with invalid value at position ' . $this->position);
-        }
 
         $output[$this->name] = $this->type->cast($value);
     }

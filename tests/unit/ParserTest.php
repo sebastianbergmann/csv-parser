@@ -17,7 +17,6 @@ use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(Parser::class)]
-#[CoversClass(CannotReadCsvFileException::class)]
 #[UsesClass(Schema::class)]
 #[UsesClass(ColumnDefinition::class)]
 #[UsesClass(Type::class)]
@@ -88,7 +87,6 @@ final class ParserTest extends TestCase
     public function test_Cannot_read_from_CSV_file_that_does_not_exist(): void
     {
         $this->expectException(CannotReadCsvFileException::class);
-        $this->expectExceptionMessage('Reading from CSV file does_not_exist.csv failed');
 
         (new Parser)->parse('does_not_exist.csv', Schema::from([]));
     }

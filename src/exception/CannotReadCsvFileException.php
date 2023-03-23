@@ -9,18 +9,8 @@
  */
 namespace SebastianBergmann\CsvParser;
 
-use function sprintf;
 use RuntimeException;
 
 final class CannotReadCsvFileException extends RuntimeException implements Exception
 {
-    public static function from(string $filename): self
-    {
-        return new self(
-            sprintf(
-                'Reading from CSV file %s failed',
-                $filename
-            )
-        );
-    }
 }

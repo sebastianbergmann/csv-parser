@@ -9,10 +9,10 @@
  */
 namespace SebastianBergmann\CsvParser;
 
-use function array_shift;
-use function file;
-use function str_getcsv;
+use function is_array;
 use Generator;
+use RuntimeException;
+use SplFileObject;
 
 /**
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise for this library
@@ -27,31 +27,39 @@ final class Parser
      */
     public function parse(string $filename, Schema $schema, bool $ignoreFirstLine = true): Generator
     {
-        $lines = @file($filename);
-
-        if ($lines === false) {
-            throw CannotReadCsvFileException::from($filename);
+        try {
+            $file = new SplFileObject($filename);
+        } catch (RuntimeException $e) {
+            throw new CannotReadCsvFileException($e->getMessage());
         }
 
-        if ($ignoreFirstLine) {
-            array_shift($lines);
-        }
+        $file->setFlags(SplFileObject::READ_CSV | SplFileObject::SKIP_EMPTY | SplFileObject::DROP_NEW_LINE);
 
-        return $this->generator($lines, $schema);
+        return $this->generator($file, $schema, $ignoreFirstLine);
     }
 
     /**
-     * @psalm-param list<string> $lines
-     *
      * @psalm-return Generator<int, array<string, int|float|string>>
      */
-    private function generator(array $lines, Schema $schema): Generator
+    private function generator(SplFileObject $file, Schema $schema, bool $ignoreFirstLine): Generator
     {
-        foreach ($lines as $line) {
+        $firstLine = true;
+
+        foreach ($file as $line) {
+            if ($ignoreFirstLine && $firstLine) {
+                $firstLine = false;
+
+                continue;
+            }
+
+            if (!is_array($line)) {
+                continue;
+            }
+
             $data = [];
 
             foreach ($schema->columnDefinitions() as $columnDefinition) {
-                $columnDefinition->parse(str_getcsv($line), $data);
+                $columnDefinition->parse($line, $data);
             }
 
             yield $data;
