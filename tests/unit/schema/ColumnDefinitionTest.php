@@ -45,6 +45,17 @@ final class ColumnDefinitionTest extends TestCase
         $this->assertSame(['name' => 1], $output);
     }
 
+    public function testCannotParseColumnFromInputArrayThatDoesNotExist(): void
+    {
+        $input  = [];
+        $output = [];
+
+        $this->expectException(OutOfBoundsException::class);
+        $this->expectExceptionMessage('Input array does not have an element at position 1');
+
+        $this->column()->parse($input, $output);
+    }
+
     private function column(): ColumnDefinition
     {
         return ColumnDefinition::from(1, 'name', Type::integer());

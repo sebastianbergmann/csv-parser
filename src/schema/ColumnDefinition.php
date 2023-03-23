@@ -47,8 +47,17 @@ final class ColumnDefinition
         $this->type     = $type;
     }
 
+    /**
+     * @throws OutOfBoundsException
+     */
     public function parse(array $input, array &$output): void
     {
+        if (!isset($input[$this->position - 1])) {
+            throw new OutOfBoundsException(
+                'Input array does not have an element at position ' . $this->position
+            );
+        }
+
         $output[$this->name] = $this->type->cast($input[$this->position - 1]);
     }
 

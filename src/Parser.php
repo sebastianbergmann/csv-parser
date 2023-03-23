@@ -21,6 +21,8 @@ final class Parser
 {
     /**
      * @psalm-return Generator<int, array<string, int|float|string>>
+     *
+     * @throws OutOfBoundsException
      */
     public function parse(string $filename, Schema $schema, bool $ignoreFirstLine = true): Generator
     {
