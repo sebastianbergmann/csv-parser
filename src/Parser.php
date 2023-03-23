@@ -42,6 +42,8 @@ final class Parser
 
     /**
      * @psalm-param list<string> $lines
+     *
+     * @psalm-return Generator<int, array<string, int|float|string>>
      */
     private function generator(array $lines, Schema $schema): Generator
     {
