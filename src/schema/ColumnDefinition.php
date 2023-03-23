@@ -48,6 +48,9 @@ final class ColumnDefinition
     }
 
     /**
+     * @psalm-param list<?string> $input
+     * @psalm-param array<string, mixed> $output
+     *
      * @throws OutOfBoundsException
      */
     public function parse(array $input, array &$output): void
