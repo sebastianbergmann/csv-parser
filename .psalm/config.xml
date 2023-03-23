@@ -4,9 +4,12 @@
     xmlns="https://getpsalm.org/schema/config"
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
     resolveFromConfigFile="false"
+    errorLevel="1"
     errorBaseline=".psalm/baseline.xml"
     findUnusedBaselineEntry="true"
     findUnusedCode="false"
+    findUnusedPsalmSuppress="true"
+    strictBinaryOperands="true"
 >
     <projectFiles>
         <directory name="src" />
