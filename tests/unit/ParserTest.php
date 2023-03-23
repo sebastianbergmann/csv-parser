@@ -42,11 +42,11 @@ final class ParserTest extends TestCase
                 ],
                 Schema::from(
                     [
-                        1 => ColumnDefinition::from('a', Type::integer()),
-                        2 => ColumnDefinition::from('b', Type::float()),
-                        3 => ColumnDefinition::from('c', Type::string()),
-                        4 => ColumnDefinition::from('d', Type::boolean()),
-                        5 => ColumnDefinition::from('e', Type::boolean()),
+                        ColumnDefinition::from(1, 'a', Type::integer()),
+                        ColumnDefinition::from(2, 'b', Type::float()),
+                        ColumnDefinition::from(3, 'c', Type::string()),
+                        ColumnDefinition::from(4, 'd', Type::boolean()),
+                        ColumnDefinition::from(5, 'e', Type::boolean()),
                     ]
                 ),
                 __DIR__ . '/../fixture/fixture.csv',
@@ -60,7 +60,7 @@ final class ParserTest extends TestCase
                 ],
                 Schema::from(
                     [
-                        2 => ColumnDefinition::from('b', Type::float()),
+                        ColumnDefinition::from(2, 'b', Type::float()),
                     ]
                 ),
                 __DIR__ . '/../fixture/fixture.csv',

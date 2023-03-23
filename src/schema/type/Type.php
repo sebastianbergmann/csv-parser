@@ -40,23 +40,5 @@ abstract class Type
     {
     }
 
-    public function isBoolean(): bool
-    {
-        return false;
-    }
-
-    public function isInteger(): bool
-    {
-        return false;
-    }
-
-    public function isFloat(): bool
-    {
-        return false;
-    }
-
-    public function isString(): bool
-    {
-        return false;
-    }
+    abstract public function cast(string $value): mixed;
 }

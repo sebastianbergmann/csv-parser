@@ -16,8 +16,8 @@ namespace SebastianBergmann\CsvParser;
  */
 final class BooleanType extends Type
 {
-    public function isBoolean(): bool
+    public function cast(string $value): bool
     {
-        return true;
+        return (bool) $value;
     }
 }

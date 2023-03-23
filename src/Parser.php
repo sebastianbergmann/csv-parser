@@ -32,24 +32,9 @@ final class Parser
 
         foreach ($lines as $line) {
             $data = [];
-            $line = str_getcsv($line);
 
-            foreach ($schema->columnDefinitions() as $column => $definition) {
-                $value = $line[$column - 1];
-
-                if ($definition->type()->isBoolean()) {
-                    $value = (bool) $value;
-                }
-
-                if ($definition->type()->isInteger()) {
-                    $value = (int) $value;
-                }
-
-                if ($definition->type()->isFloat()) {
-                    $value = (float) $value;
-                }
-
-                $data[$definition->name()] = $value;
+            foreach ($schema->columnDefinitions() as $columnDefinition) {
+                $columnDefinition->parse(str_getcsv($line), $data);
             }
 
             yield $data;

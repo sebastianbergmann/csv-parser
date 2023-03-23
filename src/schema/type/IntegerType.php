@@ -16,8 +16,8 @@ namespace SebastianBergmann\CsvParser;
  */
 final class IntegerType extends Type
 {
-    public function isInteger(): bool
+    public function cast(string $value): int
     {
-        return true;
+        return (int) $value;
     }
 }

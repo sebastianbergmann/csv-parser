@@ -22,7 +22,7 @@ final class SchemaTest extends TestCase
 {
     public function testHasColumnDefinitions(): void
     {
-        $column = ColumnDefinition::from('name', Type::integer());
+        $column = ColumnDefinition::from(1, 'name', Type::integer());
         $schema = Schema::from([1 => $column]);
 
         $this->assertCount(1, $schema->columnDefinitions());

@@ -21,43 +21,24 @@ use PHPUnit\Framework\TestCase;
 #[Small]
 final class TypeTest extends TestCase
 {
+    public function testCanBeBoolean(): void
+    {
+        $this->assertSame(true, Type::boolean()->cast('1'));
+        $this->assertSame(false, Type::boolean()->cast('0'));
+    }
+
     public function testCanBeInteger(): void
     {
-        $type = Type::integer();
-
-        $this->assertTrue($type->isInteger());
-        $this->assertFalse($type->isFloat());
-        $this->assertFalse($type->isString());
-        $this->assertFalse($type->isBoolean());
+        $this->assertSame(1, Type::integer()->cast('1'));
     }
 
     public function testCanBeFloat(): void
     {
-        $type = Type::float();
-
-        $this->assertTrue($type->isFloat());
-        $this->assertFalse($type->isInteger());
-        $this->assertFalse($type->isString());
-        $this->assertFalse($type->isBoolean());
+        $this->assertSame(1.0, Type::float()->cast('1.0'));
     }
 
     public function testCanBeString(): void
     {
-        $type = Type::string();
-
-        $this->assertTrue($type->isString());
-        $this->assertFalse($type->isInteger());
-        $this->assertFalse($type->isFloat());
-        $this->assertFalse($type->isBoolean());
-    }
-
-    public function testCanBeBoolean(): void
-    {
-        $type = Type::boolean();
-
-        $this->assertTrue($type->isBoolean());
-        $this->assertFalse($type->isString());
-        $this->assertFalse($type->isInteger());
-        $this->assertFalse($type->isFloat());
+        $this->assertSame('1', Type::string()->cast('1'));
     }
 }

@@ -16,22 +16,37 @@ use PHPUnit\Framework\TestCase;
 
 #[CoversClass(ColumnDefinition::class)]
 #[UsesClass(Type::class)]
-#[UsesClass(StringType::class)]
+#[UsesClass(IntegerType::class)]
 #[Small]
 final class ColumnDefinitionTest extends TestCase
 {
-    public function testDefinesName(): void
+    public function test_Defines_position_of_column_in_CSV_line(): void
+    {
+        $this->assertSame(1, $this->column()->position());
+    }
+
+    public function testDefinesNameForArrayElement(): void
     {
         $this->assertSame('name', $this->column()->name());
     }
 
-    public function testDefinesType(): void
+    public function testDefinesTypeForArrayElement(): void
     {
-        $this->assertTrue($this->column()->type()->isString());
+        $this->assertInstanceOf(IntegerType::class, $this->column()->type());
+    }
+
+    public function test_Parses_column_from_input_array_into_output_array(): void
+    {
+        $input  = ['1'];
+        $output = [];
+
+        $this->column()->parse($input, $output);
+
+        $this->assertSame(['name' => 1], $output);
     }
 
     private function column(): ColumnDefinition
     {
-        return ColumnDefinition::from('name', Type::string());
+        return ColumnDefinition::from(1, 'name', Type::integer());
     }
 }

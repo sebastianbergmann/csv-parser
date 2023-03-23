@@ -1,8 +1,2 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.8.0@9cf4f60a333f779ad3bc704a555920e81d4fdcda">
-  <file src="src/Parser.php">
-    <InvalidReturnType>
-      <code><![CDATA[Generator<int, array<string, int|float|string>>]]></code>
-    </InvalidReturnType>
-  </file>
-</files>
+<files psalm-version="5.8.0@9cf4f60a333f779ad3bc704a555920e81d4fdcda"/>
