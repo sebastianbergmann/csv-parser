@@ -22,16 +22,29 @@ final class Parser
     /**
      * @psalm-return Generator<int, array<string, int|float|string>>
      *
+     * @throws CannotReadCsvFileException
      * @throws OutOfBoundsException
      */
     public function parse(string $filename, Schema $schema, bool $ignoreFirstLine = true): Generator
     {
-        $lines = file($filename);
+        $lines = @file($filename);
+
+        if ($lines === false) {
+            throw CannotReadCsvFileException::from($filename);
+        }
 
         if ($ignoreFirstLine) {
             array_shift($lines);
         }
 
+        return $this->generator($lines, $schema);
+    }
+
+    /**
+     * @psalm-param list<string> $lines
+     */
+    private function generator(array $lines, Schema $schema): Generator
+    {
         foreach ($lines as $line) {
             $data = [];
 
