@@ -9,6 +9,8 @@
  */
 namespace SebastianBergmann\CsvParser;
 
+use function array_key_exists;
+
 /**
  * @psalm-immutable
  *
@@ -55,7 +57,7 @@ final class ColumnDefinition
      */
     public function parse(array $input, array &$output): void
     {
-        if (!isset($input[$this->position - 1])) {
+        if (!array_key_exists($this->position - 1, $input)) {
             throw new OutOfBoundsException(
                 'Input array does not have an element at position ' . $this->position
             );
