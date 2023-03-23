@@ -4,13 +4,5 @@
     <ArgumentTypeCoercion>
       <code>$line</code>
     </ArgumentTypeCoercion>
-    <MixedReturnTypeCoercion>
-      <code><![CDATA[Generator<int, array<string, int|float|string>>]]></code>
-    </MixedReturnTypeCoercion>
-  </file>
-  <file src="src/schema/ColumnDefinition.php">
-    <MixedAssignment>
-      <code><![CDATA[$output[$this->name]]]></code>
-    </MixedAssignment>
   </file>
 </files>
