@@ -63,7 +63,13 @@ final class ColumnDefinition
             );
         }
 
-        $output[$this->name] = $this->type->cast($input[$this->position - 1]);
+        $value = $input[$this->position - 1];
+
+        if ($value === null) {
+            throw new InvalidValueException('Input array has element with invalid value at position ' . $this->position);
+        }
+
+        $output[$this->name] = $this->type->cast($value);
     }
 
     /**

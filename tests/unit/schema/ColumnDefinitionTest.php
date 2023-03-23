@@ -56,6 +56,17 @@ final class ColumnDefinitionTest extends TestCase
         $this->column()->parse($input, $output);
     }
 
+    public function testCannotParseColumnWithInvalidValue(): void
+    {
+        $input  = [null];
+        $output = [];
+
+        $this->expectException(InvalidValueException::class);
+        $this->expectExceptionMessage('Input array has element with invalid value at position 1');
+
+        $this->column()->parse($input, $output);
+    }
+
     private function column(): ColumnDefinition
     {
         return ColumnDefinition::from(1, 'name', Type::integer());
