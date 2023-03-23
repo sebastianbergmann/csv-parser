@@ -20,11 +20,16 @@ final class ColumnDefinition
      * @psalm-var positive-int
      */
     private readonly int $position;
+
+    /**
+     * @psalm-var non-empty-string
+     */
     private readonly string $name;
     private readonly Type $type;
 
     /**
      * @psalm-param positive-int $position
+     * @psalm-param non-empty-string $name
      */
     public static function from(int $position, string $name, Type $type): self
     {
@@ -33,6 +38,7 @@ final class ColumnDefinition
 
     /**
      * @psalm-param positive-int $position
+     * @psalm-param non-empty-string $name
      */
     private function __construct(int $position, string $name, Type $type)
     {
@@ -54,6 +60,9 @@ final class ColumnDefinition
         return $this->position;
     }
 
+    /**
+     * @psalm-return non-empty-string
+     */
     public function name(): string
     {
         return $this->name;
