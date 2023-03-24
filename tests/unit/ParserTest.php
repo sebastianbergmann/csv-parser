@@ -30,7 +30,7 @@ final class ParserTest extends TestCase
     public static function provider(): array
     {
         return [
-            'all columns' => [
+            'CSV file with header; schema for all columns' => [
                 [
                     [
                         'a' => 1,
@@ -49,10 +49,11 @@ final class ParserTest extends TestCase
                         ColumnDefinition::from(5, 'e', Type::boolean()),
                     ]
                 ),
-                __DIR__ . '/../fixture/fixture.csv',
+                __DIR__ . '/../fixture/fixture_with_header.csv',
+                true,
             ],
 
-            'subset of columns' => [
+            'CSV file with header; schema for subset of columns' => [
                 [
                     [
                         'b' => 2.0,
@@ -63,13 +64,52 @@ final class ParserTest extends TestCase
                         ColumnDefinition::from(2, 'b', Type::float()),
                     ]
                 ),
-                __DIR__ . '/../fixture/fixture.csv',
+                __DIR__ . '/../fixture/fixture_with_header.csv',
+                true,
+            ],
+
+            'CSV file without header; schema for all columns' => [
+                [
+                    [
+                        'a' => 1,
+                        'b' => 2.0,
+                        'c' => '3',
+                        'd' => true,
+                        'e' => false,
+                    ],
+                ],
+                Schema::from(
+                    [
+                        ColumnDefinition::from(1, 'a', Type::integer()),
+                        ColumnDefinition::from(2, 'b', Type::float()),
+                        ColumnDefinition::from(3, 'c', Type::string()),
+                        ColumnDefinition::from(4, 'd', Type::boolean()),
+                        ColumnDefinition::from(5, 'e', Type::boolean()),
+                    ]
+                ),
+                __DIR__ . '/../fixture/fixture_without_header.csv',
+                false,
+            ],
+
+            'CSV file without header; schema for subset of columns' => [
+                [
+                    [
+                        'b' => 2.0,
+                    ],
+                ],
+                Schema::from(
+                    [
+                        ColumnDefinition::from(2, 'b', Type::float()),
+                    ]
+                ),
+                __DIR__ . '/../fixture/fixture_without_header.csv',
+                false,
             ],
         ];
     }
 
     #[DataProvider('provider')]
-    public function test_Parses_CSV_file_according_to_schema(array $expected, Schema $schema, string $filename): void
+    public function test_Parses_CSV_file_according_to_schema(array $expected, Schema $schema, string $filename, bool $ignoreFirstLine): void
     {
         $parser = new Parser;
 
@@ -78,7 +118,8 @@ final class ParserTest extends TestCase
             iterator_to_array(
                 $parser->parse(
                     $filename,
-                    $schema
+                    $schema,
+                    $ignoreFirstLine,
                 )
             )
         );
@@ -88,6 +129,6 @@ final class ParserTest extends TestCase
     {
         $this->expectException(CannotReadCsvFileException::class);
 
-        (new Parser)->parse('does_not_exist.csv', Schema::from([]));
+        (new Parser)->parse('does_not_exist.csv', Schema::from([]), false);
     }
 }
