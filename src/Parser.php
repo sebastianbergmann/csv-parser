@@ -25,7 +25,7 @@ final class Parser
      * @throws CannotReadCsvFileException
      * @throws OutOfBoundsException
      */
-    public function parse(string $filename, Schema $schema, bool $ignoreFirstLine = true): Generator
+    public function parse(string $filename, Schema $schema, bool $ignoreFirstLine): Generator
     {
         try {
             $file = new SplFileObject($filename);

@@ -66,11 +66,11 @@ The following types are available:
 * float (`Type::float()`; uses `(float)` type cast)
 * string (`Type::string()`)
 
-The `Parser::parse()` method requires two arguments and accepts an optional third argument:
+The `Parser::parse()` method requires three arguments:
 
 * The first argument, `$filename`, is the path to the CSV file that should be parsed
 * The second argument, `$schema`, is the `Schema` object we discussed above
-* The third argument, `$ignoreFirstLine` (default: `true`), controls whether the first line of the CSV file should be ignored
+* The third argument, `$ignoreFirstLine`, controls whether the first line of the CSV file should be ignored
 
 Running the example shown above prints the output shown below:
 
