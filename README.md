@@ -26,7 +26,7 @@ composer require --dev sebastian/csv-parser
 #### `example.csv`
 
 ```csv
-1,2,3,1,0
+1,2,3,1,0,2023-03-24
 ```
 
 ```php
@@ -35,6 +35,7 @@ use SebastianBergmann\CsvParser\Parser;
 use SebastianBergmann\CsvParser\Schema;
 use SebastianBergmann\CsvParser\ColumnDefinition;
 use SebastianBergmann\CsvParser\Type;
+use SebastianBergmann\CsvParser\Callback;
 
 $schema = Schema::from(
     [
@@ -43,6 +44,15 @@ $schema = Schema::from(
         ColumnDefinition::from(3, 'c', Type::string()),
         ColumnDefinition::from(4, 'd', Type::boolean()),
         ColumnDefinition::from(5, 'e', Type::boolean()),
+        ColumnDefinition::from(6, 'f', Type::callback(
+            new class implements Callback
+            {
+                public function apply(string $value): DateTimeImmutable
+                {
+                    return new DateTimeImmutable($value);
+                }
+            }
+        )),
     ]
 );
 
@@ -65,6 +75,7 @@ The following types are available:
 * integer (`Type::integer()`; uses `(int)` type cast)
 * float (`Type::float()`; uses `(float)` type cast)
 * string (`Type::string()`)
+* callback (`Type::callback($callback)`; `$callback` is an object that implements the `SebastianBergmann\CsvParser\Callback` interface)
 
 The `Parser::parse()` method requires three arguments:
 
@@ -86,5 +97,14 @@ array(3) {
   bool(true)
   ["e"]=>
   bool(false)
+  ["f"]=>
+  object(DateTimeImmutable)#1 (3) {
+    ["date"]=>
+    string(26) "2023-03-24 00:00:00.000000"
+    ["timezone_type"]=>
+    int(3)
+    ["timezone"]=>
+    string(13) "Europe/Berlin"
+  }
 }
 ```

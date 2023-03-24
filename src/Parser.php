@@ -20,7 +20,7 @@ use SplFileObject;
 final class Parser
 {
     /**
-     * @psalm-return Generator<int, array<string, bool|int|float|string>>
+     * @psalm-return Generator<int, array<string, mixed>>
      *
      * @throws CannotReadCsvFileException
      * @throws OutOfBoundsException
@@ -39,7 +39,7 @@ final class Parser
     }
 
     /**
-     * @psalm-return Generator<int, array<string, bool|int|float|string>>
+     * @psalm-return Generator<int, array<string, mixed>>
      */
     private function generator(SplFileObject $file, Schema $schema, bool $ignoreFirstLine): Generator
     {

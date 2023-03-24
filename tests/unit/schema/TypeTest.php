@@ -9,15 +9,17 @@
  */
 namespace SebastianBergmann\CsvParser;
 
+use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(Type::class)]
+#[CoversClass(BooleanType::class)]
+#[CoversClass(CallbackType::class)]
 #[CoversClass(IntegerType::class)]
 #[CoversClass(FloatType::class)]
 #[CoversClass(StringType::class)]
-#[CoversClass(BooleanType::class)]
 #[Small]
 final class TypeTest extends TestCase
 {
@@ -40,5 +42,18 @@ final class TypeTest extends TestCase
     public function testCanConvertStringToString(): void
     {
         $this->assertSame('1', Type::string()->apply('1'));
+    }
+
+    public function testCanConvertStringUsingCallback(): void
+    {
+        $callback = new class implements Callback
+        {
+            public function apply(string $value): DateTimeImmutable
+            {
+                return new DateTimeImmutable($value);
+            }
+        };
+
+        $this->assertSame('2023-03-24', Type::callback($callback)->apply('2023-03-24')->format('Y-m-d'));
     }
 }

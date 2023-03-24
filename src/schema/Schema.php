@@ -40,7 +40,7 @@ final class Schema
     /**
      * @psalm-param list<string> $line
      *
-     * @psalm-return array<string, bool|float|int|string>
+     * @psalm-return array<string, mixed>
      */
     public function apply(array $line): array
     {
