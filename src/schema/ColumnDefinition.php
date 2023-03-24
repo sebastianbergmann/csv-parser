@@ -55,7 +55,7 @@ final class ColumnDefinition
      *
      * @throws OutOfBoundsException
      */
-    public function parse(array $input, array &$output): void
+    public function apply(array $input, array &$output): void
     {
         if (!array_key_exists($this->position - 1, $input)) {
             throw new OutOfBoundsException(
@@ -65,27 +65,6 @@ final class ColumnDefinition
 
         $value = $input[$this->position - 1];
 
-        $output[$this->name] = $this->type->cast($value);
-    }
-
-    /**
-     * @psalm-return positive-int
-     */
-    public function position(): int
-    {
-        return $this->position;
-    }
-
-    /**
-     * @psalm-return non-empty-string
-     */
-    public function name(): string
-    {
-        return $this->name;
-    }
-
-    public function type(): Type
-    {
-        return $this->type;
+        $output[$this->name] = $this->type->apply($value);
     }
 }

@@ -16,7 +16,7 @@ namespace SebastianBergmann\CsvParser;
  */
 final class IntegerType extends Type
 {
-    public function cast(string $value): int
+    public function apply(string $value): int
     {
         return (int) $value;
     }

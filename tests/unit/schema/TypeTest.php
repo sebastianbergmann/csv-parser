@@ -23,22 +23,22 @@ final class TypeTest extends TestCase
 {
     public function testCanCastStringToBoolean(): void
     {
-        $this->assertSame(true, Type::boolean()->cast('1'));
-        $this->assertSame(false, Type::boolean()->cast('0'));
+        $this->assertSame(true, Type::boolean()->apply('1'));
+        $this->assertSame(false, Type::boolean()->apply('0'));
     }
 
     public function testCanCastStringToInteger(): void
     {
-        $this->assertSame(1, Type::integer()->cast('1'));
+        $this->assertSame(1, Type::integer()->apply('1'));
     }
 
     public function testCanCastStringToFloat(): void
     {
-        $this->assertSame(1.0, Type::float()->cast('1.0'));
+        $this->assertSame(1.0, Type::float()->apply('1.0'));
     }
 
     public function testCanCastStringToString(): void
     {
-        $this->assertSame('1', Type::string()->cast('1'));
+        $this->assertSame('1', Type::string()->apply('1'));
     }
 }

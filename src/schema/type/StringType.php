@@ -16,7 +16,7 @@ namespace SebastianBergmann\CsvParser;
  */
 final class StringType extends Type
 {
-    public function cast(string $value): string
+    public function apply(string $value): string
     {
         return $value;
     }

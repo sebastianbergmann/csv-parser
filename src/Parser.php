@@ -56,13 +56,7 @@ final class Parser
                 continue;
             }
 
-            $data = [];
-
-            foreach ($schema->columnDefinitions() as $columnDefinition) {
-                $columnDefinition->parse($line, $data);
-            }
-
-            yield $data;
+            yield $schema->apply($line);
         }
     }
 }

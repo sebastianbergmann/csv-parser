@@ -17,16 +17,39 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(Schema::class)]
 #[UsesClass(ColumnDefinition::class)]
 #[UsesClass(Type::class)]
+#[UsesClass(BooleanType::class)]
+#[UsesClass(IntegerType::class)]
+#[UsesClass(FloatType::class)]
+#[UsesClass(StringType::class)]
 #[Small]
 final class SchemaTest extends TestCase
 {
-    public function testHasColumnDefinitions(): void
+    public function testAppliesColumnDefinitionsToMapInputArrayToOutputArray(): void
     {
-        $column = ColumnDefinition::from(1, 'name', Type::integer());
-        $schema = Schema::from([1 => $column]);
+        $schema = Schema::from(
+            [
+                ColumnDefinition::from(1, 'a', Type::integer()),
+                ColumnDefinition::from(2, 'b', Type::float()),
+                ColumnDefinition::from(3, 'c', Type::string()),
+                ColumnDefinition::from(4, 'd', Type::boolean()),
+            ]
+        );
 
-        $this->assertCount(1, $schema->columnDefinitions());
-        $this->assertArrayHasKey(1, $schema->columnDefinitions());
-        $this->assertContains($column, $schema->columnDefinitions());
+        $this->assertSame(
+            [
+                'a' => 1,
+                'b' => 1.1,
+                'c' => '1',
+                'd' => true,
+            ],
+            $schema->apply(
+                [
+                    '1',
+                    '1.1',
+                    '1',
+                    '1',
+                ]
+            )
+        );
     }
 }

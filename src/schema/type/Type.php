@@ -40,5 +40,5 @@ abstract class Type
     {
     }
 
-    abstract public function cast(string $value): mixed;
+    abstract public function apply(string $value): mixed;
 }

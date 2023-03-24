@@ -16,7 +16,7 @@ namespace SebastianBergmann\CsvParser;
  */
 final class FloatType extends Type
 {
-    public function cast(string $value): float
+    public function apply(string $value): float
     {
         return (float) $value;
     }

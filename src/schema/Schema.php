@@ -38,10 +38,18 @@ final class Schema
     }
 
     /**
-     * @psalm-return array<int, ColumnDefinition>
+     * @psalm-param list<string> $line
+     *
+     * @psalm-return array<string, bool|float|int|string>
      */
-    public function columnDefinitions(): array
+    public function apply(array $line): array
     {
-        return $this->columnDefinitions;
+        $data = [];
+
+        foreach ($this->columnDefinitions as $columnDefinition) {
+            $columnDefinition->apply($line, $data);
+        }
+
+        return $data;
     }
 }
