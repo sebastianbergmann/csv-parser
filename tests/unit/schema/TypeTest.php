@@ -21,23 +21,23 @@ use PHPUnit\Framework\TestCase;
 #[Small]
 final class TypeTest extends TestCase
 {
-    public function testCanBeBoolean(): void
+    public function testCanCastStringToBoolean(): void
     {
         $this->assertSame(true, Type::boolean()->cast('1'));
         $this->assertSame(false, Type::boolean()->cast('0'));
     }
 
-    public function testCanBeInteger(): void
+    public function testCanCastStringToInteger(): void
     {
         $this->assertSame(1, Type::integer()->cast('1'));
     }
 
-    public function testCanBeFloat(): void
+    public function testCanCastStringToFloat(): void
     {
         $this->assertSame(1.0, Type::float()->cast('1.0'));
     }
 
-    public function testCanBeString(): void
+    public function testCanCastStringToString(): void
     {
         $this->assertSame('1', Type::string()->cast('1'));
     }
