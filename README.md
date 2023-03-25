@@ -106,3 +106,9 @@ array(3) {
   }
 }
 ```
+
+## Low Maintenance Project
+
+This is a low maintenance project. The scope of features and support are purposefully kept narrow for my purposes to ensure long term maintenance is viable. I am not looking to grow this into a bigger project at all.
+
+Issues and PRs raised for bugs are perfectly fine assuming they do not significantly increase the scope of the project. Please do not open PRs for new features that expand the scope.
