@@ -9,6 +9,9 @@
  */
 namespace SebastianBergmann\CsvParser;
 
+use function array_is_list;
+use function assert;
+
 /**
  * @psalm-immutable
  *
@@ -17,20 +20,19 @@ namespace SebastianBergmann\CsvParser;
 final class Schema
 {
     /**
-     * @psalm-var array<int, ColumnDefinition>
+     * @psalm-var list<ColumnDefinition>
      */
     private readonly array $columnDefinitions;
 
-    /**
-     * @psalm-param array<int, ColumnDefinition> $columnDefinitions
-     */
-    public static function from(array $columnDefinitions): self
+    public static function from(ColumnDefinition ...$columnDefinitions): self
     {
+        assert(array_is_list($columnDefinitions));
+
         return new self($columnDefinitions);
     }
 
     /**
-     * @psalm-param array<int, ColumnDefinition> $columnDefinitions
+     * @psalm-param list<ColumnDefinition> $columnDefinitions
      */
     private function __construct(array $columnDefinitions)
     {

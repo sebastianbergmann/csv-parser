@@ -38,22 +38,20 @@ use SebastianBergmann\CsvParser\Type;
 use SebastianBergmann\CsvParser\Callback;
 
 $schema = Schema::from(
-    [
-        ColumnDefinition::from(1, 'a', Type::integer()),
-        ColumnDefinition::from(2, 'b', Type::float()),
-        ColumnDefinition::from(3, 'c', Type::string()),
-        ColumnDefinition::from(4, 'd', Type::boolean()),
-        ColumnDefinition::from(5, 'e', Type::boolean()),
-        ColumnDefinition::from(6, 'f', Type::callback(
-            new class implements Callback
+    ColumnDefinition::from(1, 'a', Type::integer()),
+    ColumnDefinition::from(2, 'b', Type::float()),
+    ColumnDefinition::from(3, 'c', Type::string()),
+    ColumnDefinition::from(4, 'd', Type::boolean()),
+    ColumnDefinition::from(5, 'e', Type::boolean()),
+    ColumnDefinition::from(6, 'f', Type::callback(
+        new class implements Callback
+        {
+            public function apply(string $value): DateTimeImmutable
             {
-                public function apply(string $value): DateTimeImmutable
-                {
-                    return new DateTimeImmutable($value);
-                }
+                return new DateTimeImmutable($value);
             }
-        )),
-    ]
+        }
+    )),
 );
 
 $parser = new Parser;

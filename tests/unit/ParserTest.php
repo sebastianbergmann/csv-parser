@@ -41,13 +41,11 @@ final class ParserTest extends TestCase
                     ],
                 ],
                 Schema::from(
-                    [
-                        ColumnDefinition::from(1, 'a', Type::integer()),
-                        ColumnDefinition::from(2, 'b', Type::float()),
-                        ColumnDefinition::from(3, 'c', Type::string()),
-                        ColumnDefinition::from(4, 'd', Type::boolean()),
-                        ColumnDefinition::from(5, 'e', Type::boolean()),
-                    ]
+                    ColumnDefinition::from(1, 'a', Type::integer()),
+                    ColumnDefinition::from(2, 'b', Type::float()),
+                    ColumnDefinition::from(3, 'c', Type::string()),
+                    ColumnDefinition::from(4, 'd', Type::boolean()),
+                    ColumnDefinition::from(5, 'e', Type::boolean()),
                 ),
                 __DIR__ . '/../fixture/fixture_with_header.csv',
                 true,
@@ -60,9 +58,7 @@ final class ParserTest extends TestCase
                     ],
                 ],
                 Schema::from(
-                    [
-                        ColumnDefinition::from(2, 'b', Type::float()),
-                    ]
+                    ColumnDefinition::from(2, 'b', Type::float()),
                 ),
                 __DIR__ . '/../fixture/fixture_with_header.csv',
                 true,
@@ -79,13 +75,11 @@ final class ParserTest extends TestCase
                     ],
                 ],
                 Schema::from(
-                    [
-                        ColumnDefinition::from(1, 'a', Type::integer()),
-                        ColumnDefinition::from(2, 'b', Type::float()),
-                        ColumnDefinition::from(3, 'c', Type::string()),
-                        ColumnDefinition::from(4, 'd', Type::boolean()),
-                        ColumnDefinition::from(5, 'e', Type::boolean()),
-                    ]
+                    ColumnDefinition::from(1, 'a', Type::integer()),
+                    ColumnDefinition::from(2, 'b', Type::float()),
+                    ColumnDefinition::from(3, 'c', Type::string()),
+                    ColumnDefinition::from(4, 'd', Type::boolean()),
+                    ColumnDefinition::from(5, 'e', Type::boolean()),
                 ),
                 __DIR__ . '/../fixture/fixture_without_header.csv',
                 false,
@@ -98,9 +92,7 @@ final class ParserTest extends TestCase
                     ],
                 ],
                 Schema::from(
-                    [
-                        ColumnDefinition::from(2, 'b', Type::float()),
-                    ]
+                    ColumnDefinition::from(2, 'b', Type::float()),
                 ),
                 __DIR__ . '/../fixture/fixture_without_header.csv',
                 false,
@@ -129,6 +121,6 @@ final class ParserTest extends TestCase
     {
         $this->expectException(CannotReadCsvFileException::class);
 
-        (new Parser)->parse('does_not_exist.csv', Schema::from([]), false);
+        (new Parser)->parse('does_not_exist.csv', Schema::from(), false);
     }
 }

@@ -27,12 +27,10 @@ final class SchemaTest extends TestCase
     public function testAppliesColumnDefinitionsToMapInputArrayToOutputArray(): void
     {
         $schema = Schema::from(
-            [
-                ColumnDefinition::from(1, 'a', Type::integer()),
-                ColumnDefinition::from(2, 'b', Type::float()),
-                ColumnDefinition::from(3, 'c', Type::string()),
-                ColumnDefinition::from(4, 'd', Type::boolean()),
-            ]
+            ColumnDefinition::from(1, 'a', Type::integer()),
+            ColumnDefinition::from(2, 'b', Type::float()),
+            ColumnDefinition::from(3, 'c', Type::string()),
+            ColumnDefinition::from(4, 'd', Type::boolean()),
         );
 
         $this->assertSame(
