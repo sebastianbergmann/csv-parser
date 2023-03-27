@@ -16,9 +16,9 @@ use PHPUnit\Framework\TestCase;
 
 #[CoversClass(Type::class)]
 #[CoversClass(BooleanType::class)]
-#[CoversClass(CallbackType::class)]
 #[CoversClass(IntegerType::class)]
 #[CoversClass(FloatType::class)]
+#[CoversClass(ObjectType::class)]
 #[CoversClass(StringType::class)]
 #[Small]
 final class TypeTest extends TestCase
@@ -39,21 +39,21 @@ final class TypeTest extends TestCase
         $this->assertSame(1.0, Type::float()->apply('1.0'));
     }
 
-    public function testKeepsStringsAsTheyAre(): void
+    public function testCanConvertStringToObjectUsingObjectMapper(): void
     {
-        $this->assertSame('1', Type::string()->apply('1'));
-    }
-
-    public function testCanConvertStringUsingCallback(): void
-    {
-        $callback = new class implements Callback
+        $callback = new class implements ObjectMapper
         {
-            public function apply(string $value): DateTimeImmutable
+            public function map(string $value): DateTimeImmutable
             {
                 return new DateTimeImmutable($value);
             }
         };
 
-        $this->assertSame('2023-03-24', Type::callback($callback)->apply('2023-03-24')->format('Y-m-d'));
+        $this->assertSame('2023-03-24', Type::object($callback)->apply('2023-03-24')->format('Y-m-d'));
+    }
+
+    public function testKeepsStringsAsTheyAre(): void
+    {
+        $this->assertSame('1', Type::string()->apply('1'));
     }
 }

@@ -21,11 +21,6 @@ abstract class Type
         return new BooleanType;
     }
 
-    public static function callback(Callback $callback): self
-    {
-        return new CallbackType($callback);
-    }
-
     public static function integer(): self
     {
         return new IntegerType;
@@ -34,6 +29,11 @@ abstract class Type
     public static function float(): self
     {
         return new FloatType;
+    }
+
+    public static function object(ObjectMapper $callback): self
+    {
+        return new ObjectType($callback);
     }
 
     public static function string(): self

@@ -14,17 +14,7 @@ namespace SebastianBergmann\CsvParser;
  *
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise for this library
  */
-final class CallbackType extends Type
+interface ObjectMapper
 {
-    private Callback $callback;
-
-    protected function __construct(Callback $callback)
-    {
-        $this->callback = $callback;
-    }
-
-    public function apply(string $value): mixed
-    {
-        return $this->callback->apply($value);
-    }
+    public function map(string $value): object;
 }

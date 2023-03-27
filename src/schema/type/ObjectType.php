@@ -14,7 +14,17 @@ namespace SebastianBergmann\CsvParser;
  *
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise for this library
  */
-interface Callback
+final class ObjectType extends Type
 {
-    public function apply(string $value): mixed;
+    private ObjectMapper $mapper;
+
+    protected function __construct(ObjectMapper $mapper)
+    {
+        $this->mapper = $mapper;
+    }
+
+    public function apply(string $value): object
+    {
+        return $this->mapper->map($value);
+    }
 }

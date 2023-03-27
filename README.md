@@ -43,10 +43,10 @@ $schema = Schema::from(
     ColumnDefinition::from(3, 'c', Type::string()),
     ColumnDefinition::from(4, 'd', Type::boolean()),
     ColumnDefinition::from(5, 'e', Type::boolean()),
-    ColumnDefinition::from(6, 'f', Type::callback(
-        new class implements Callback
+    ColumnDefinition::from(6, 'f', Type::object(
+        new class implements ObjectMapper
         {
-            public function apply(string $value): DateTimeImmutable
+            public function map(string $value): DateTimeImmutable
             {
                 return new DateTimeImmutable($value);
             }
@@ -73,7 +73,7 @@ The following types are available:
 * integer (`Type::integer()`; uses `(int)` type cast)
 * float (`Type::float()`; uses `(float)` type cast)
 * string (`Type::string()`)
-* callback (`Type::callback($callback)`; `$callback` is an object that implements the `SebastianBergmann\CsvParser\Callback` interface)
+* callback (`Type::object($mapper)`; `$mapper` is an object that implements the `SebastianBergmann\CsvParser\ObjectMapper` interface)
 
 The `Parser::parse()` method requires three arguments:
 
