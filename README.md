@@ -56,7 +56,7 @@ $schema = Schema::from(
 
 $parser = new Parser;
 
-foreach ($parser->parse('example.csv', $schema, false) as $row) {
+foreach ($parser->parse('example.csv', $schema) as $row) {
     var_dump($row);
 }
 ```
@@ -75,11 +75,10 @@ The following types are available:
 * string (`Type::string()`)
 * object (`Type::object($mapper)`; `$mapper` is an object that implements the `SebastianBergmann\CsvParser\ObjectMapper` interface)
 
-The `Parser::parse()` method requires three arguments:
+The `Parser::parse()` method requires two arguments:
 
 * The first argument, `$filename`, is the path to the CSV file that should be parsed
 * The second argument, `$schema`, is the `Schema` object we discussed above
-* The third argument, `$ignoreFirstLine`, controls whether the first line of the CSV file should be ignored
 
 Running the example shown above prints the output shown below:
 
@@ -106,3 +105,5 @@ array(3) {
   }
 }
 ```
+
+The `Parser::ignoreFirstLine()` method can be used to configure the `Parser` to ignore the first line of the CSV file.

@@ -105,13 +105,16 @@ final class ParserTest extends TestCase
     {
         $parser = new Parser;
 
+        if ($ignoreFirstLine) {
+            $parser->ignoreFirstLine();
+        }
+
         $this->assertSame(
             $expected,
             iterator_to_array(
                 $parser->parse(
                     $filename,
                     $schema,
-                    $ignoreFirstLine,
                 )
             )
         );
@@ -121,6 +124,6 @@ final class ParserTest extends TestCase
     {
         $this->expectException(CannotReadCsvFileException::class);
 
-        (new Parser)->parse('does_not_exist.csv', Schema::from(), false);
+        (new Parser)->parse('does_not_exist.csv', Schema::from());
     }
 }

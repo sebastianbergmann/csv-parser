@@ -19,13 +19,15 @@ use SplFileObject;
  */
 final class Parser
 {
+    private bool $ignoreFirstLine = false;
+
     /**
      * @psalm-return Generator<int, array<string, bool|int|float|object|string>>
      *
      * @throws CannotReadCsvFileException
      * @throws OutOfBoundsException
      */
-    public function parse(string $filename, Schema $schema, bool $ignoreFirstLine): Generator
+    public function parse(string $filename, Schema $schema): Generator
     {
         try {
             $file = new SplFileObject($filename);
@@ -35,18 +37,23 @@ final class Parser
 
         $file->setFlags(SplFileObject::READ_CSV | SplFileObject::SKIP_EMPTY | SplFileObject::DROP_NEW_LINE);
 
-        return $this->generator($file, $schema, $ignoreFirstLine);
+        return $this->generator($file, $schema);
+    }
+
+    public function ignoreFirstLine(): void
+    {
+        $this->ignoreFirstLine = true;
     }
 
     /**
      * @psalm-return Generator<int, array<string, bool|int|float|object|string>>
      */
-    private function generator(SplFileObject $file, Schema $schema, bool $ignoreFirstLine): Generator
+    private function generator(SplFileObject $file, Schema $schema): Generator
     {
         $firstLine = true;
 
         foreach ($file as $line) {
-            if ($ignoreFirstLine && $firstLine) {
+            if ($this->ignoreFirstLine && $firstLine) {
                 $firstLine = false;
 
                 continue;
