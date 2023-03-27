@@ -163,7 +163,7 @@ final class ParserTest extends TestCase
         $parser = new Parser;
 
         $this->expectException(InvalidSeparatorException::class);
-        $this->expectExceptionMessage('Separator must be a one single-byte character');
+        $this->expectExceptionMessage('Separator must be a single-byte character');
 
         $parser->setSeparator('..');
     }

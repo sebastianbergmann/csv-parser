@@ -15,6 +15,6 @@ final class InvalidSeparatorException extends InvalidArgumentException implement
 {
     public function __construct()
     {
-        parent::__construct('Separator must be a one single-byte character');
+        parent::__construct('Separator must be a single-byte character');
     }
 }
