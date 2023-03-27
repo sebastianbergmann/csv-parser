@@ -19,6 +19,7 @@ use SplFileObject;
  */
 final class Parser
 {
+    private string $separator     = ',';
     private bool $ignoreFirstLine = false;
 
     /**
@@ -36,8 +37,14 @@ final class Parser
         }
 
         $file->setFlags(SplFileObject::READ_CSV | SplFileObject::SKIP_EMPTY | SplFileObject::DROP_NEW_LINE);
+        $file->setCsvControl($this->separator);
 
         return $this->generator($file, $schema);
+    }
+
+    public function setSeparator(string $separator): void
+    {
+        $this->separator = $separator;
     }
 
     public function ignoreFirstLine(): void

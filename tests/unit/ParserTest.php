@@ -49,6 +49,7 @@ final class ParserTest extends TestCase
                 ),
                 __DIR__ . '/../fixture/fixture_with_header.csv',
                 true,
+                null,
             ],
 
             'CSV file with header; schema for subset of columns' => [
@@ -62,6 +63,7 @@ final class ParserTest extends TestCase
                 ),
                 __DIR__ . '/../fixture/fixture_with_header.csv',
                 true,
+                null,
             ],
 
             'CSV file without header; schema for all columns' => [
@@ -83,6 +85,7 @@ final class ParserTest extends TestCase
                 ),
                 __DIR__ . '/../fixture/fixture_without_header.csv',
                 false,
+                null,
             ],
 
             'CSV file without header; schema for subset of columns' => [
@@ -96,14 +99,41 @@ final class ParserTest extends TestCase
                 ),
                 __DIR__ . '/../fixture/fixture_without_header.csv',
                 false,
+                null,
+            ],
+
+            'CSV file with non-default separator' => [
+                [
+                    [
+                        'a' => 1,
+                        'b' => 2.0,
+                        'c' => '3',
+                        'd' => true,
+                        'e' => false,
+                    ],
+                ],
+                Schema::from(
+                    ColumnDefinition::from(1, 'a', Type::integer()),
+                    ColumnDefinition::from(2, 'b', Type::float()),
+                    ColumnDefinition::from(3, 'c', Type::string()),
+                    ColumnDefinition::from(4, 'd', Type::boolean()),
+                    ColumnDefinition::from(5, 'e', Type::boolean()),
+                ),
+                __DIR__ . '/../fixture/fixture_non_default_separator.csv',
+                false,
+                ';',
             ],
         ];
     }
 
     #[DataProvider('provider')]
-    public function test_Parses_CSV_file_according_to_schema(array $expected, Schema $schema, string $filename, bool $ignoreFirstLine): void
+    public function test_Parses_CSV_file_according_to_schema(array $expected, Schema $schema, string $filename, bool $ignoreFirstLine, ?string $separator): void
     {
         $parser = new Parser;
+
+        if ($separator !== null) {
+            $parser->setSeparator($separator);
+        }
 
         if ($ignoreFirstLine) {
             $parser->ignoreFirstLine();
