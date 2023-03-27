@@ -35,7 +35,7 @@ use SebastianBergmann\CsvParser\Parser;
 use SebastianBergmann\CsvParser\Schema;
 use SebastianBergmann\CsvParser\ColumnDefinition;
 use SebastianBergmann\CsvParser\Type;
-use SebastianBergmann\CsvParser\Callback;
+use SebastianBergmann\CsvParser\ObjectMapper;
 
 $schema = Schema::from(
     ColumnDefinition::from(1, 'a', Type::integer()),
@@ -73,7 +73,7 @@ The following types are available:
 * integer (`Type::integer()`; uses `(int)` type cast)
 * float (`Type::float()`; uses `(float)` type cast)
 * string (`Type::string()`)
-* callback (`Type::object($mapper)`; `$mapper` is an object that implements the `SebastianBergmann\CsvParser\ObjectMapper` interface)
+* object (`Type::object($mapper)`; `$mapper` is an object that implements the `SebastianBergmann\CsvParser\ObjectMapper` interface)
 
 The `Parser::parse()` method requires three arguments:
 
