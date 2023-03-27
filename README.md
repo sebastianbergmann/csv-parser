@@ -106,6 +106,6 @@ array(3) {
 }
 ```
 
-The `Parser::ignoreFirstLine()` method can be used to configure the `Parser` to ignore the first line of the CSV file.
+The `$parser->ignoreFirstLine()` method can be used to configure the parser to ignore the first line of the CSV file.
 
-The `Parser::setSeparator()` method can be used to configure the `Parser` to use a separator different from the default `,`.
+The `$parser->setSeparator()` method can be used to configure the parser to use a separator different from the default `,`.
