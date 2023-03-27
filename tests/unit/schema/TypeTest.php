@@ -39,7 +39,7 @@ final class TypeTest extends TestCase
         $this->assertSame(1.0, Type::float()->apply('1.0'));
     }
 
-    public function testCanConvertStringToString(): void
+    public function testKeepsStringsAsTheyAre(): void
     {
         $this->assertSame('1', Type::string()->apply('1'));
     }
