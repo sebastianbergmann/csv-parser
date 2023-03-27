@@ -10,6 +10,7 @@
 namespace SebastianBergmann\CsvParser;
 
 use function is_array;
+use function strlen;
 use Generator;
 use RuntimeException;
 use SplFileObject;
@@ -42,8 +43,15 @@ final class Parser
         return $this->generator($file, $schema);
     }
 
+    /**
+     * @throws InvalidSeparatorException
+     */
     public function setSeparator(string $separator): void
     {
+        if (strlen($separator) !== 1) {
+            throw new InvalidSeparatorException;
+        }
+
         $this->separator = $separator;
     }
 

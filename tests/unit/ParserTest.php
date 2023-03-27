@@ -17,6 +17,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(Parser::class)]
+#[CoversClass(InvalidSeparatorException::class)]
 #[UsesClass(Schema::class)]
 #[UsesClass(ColumnDefinition::class)]
 #[UsesClass(Type::class)]
@@ -155,5 +156,15 @@ final class ParserTest extends TestCase
         $this->expectException(CannotReadCsvFileException::class);
 
         (new Parser)->parse('does_not_exist.csv', Schema::from());
+    }
+
+    public function testRejectsInvalidSeparator(): void
+    {
+        $parser = new Parser;
+
+        $this->expectException(InvalidSeparatorException::class);
+        $this->expectExceptionMessage('Separator must be a one single-byte character');
+
+        $parser->setSeparator('..');
     }
 }
