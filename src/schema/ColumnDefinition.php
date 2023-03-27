@@ -51,7 +51,7 @@ final class ColumnDefinition
 
     /**
      * @psalm-param list<string> $input
-     * @psalm-param array<string, mixed> $output
+     * @psalm-param array<string, bool|int|float|object|string> $output
      *
      * @throws OutOfBoundsException
      */
