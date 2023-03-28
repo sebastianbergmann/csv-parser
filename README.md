@@ -111,3 +111,5 @@ The `$parser->ignoreFirstLine()` method can be used to configure the parser to i
 The `$parser->setSeparator()` method can be used to configure the parser to use a separator different from the default `,`.
 
 The `$parser->setEnclosure()` method can be used to configure the parser to use an enclosure different from the default `"`.
+
+The `$parser->setEscape()` method can be used to configure the parser to use an escape different from the default `"`.

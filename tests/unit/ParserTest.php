@@ -19,6 +19,7 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(Parser::class)]
 #[CoversClass(InvalidSeparatorException::class)]
 #[CoversClass(InvalidEnclosureException::class)]
+#[CoversClass(InvalidEscapeException::class)]
 #[UsesClass(Schema::class)]
 #[UsesClass(FieldDefinition::class)]
 #[UsesClass(Type::class)]
@@ -122,6 +123,37 @@ final class ParserTest extends TestCase
                 ';',
                 null,
             ],
+
+            'CSV file with escaped values (default escape)' => [
+                [
+                    [
+                        'a' => 'aaa',
+                        'b' => 'b"bb',
+                        'c' => 'ccc',
+                    ],
+                ],
+                Schema::from(
+                    FieldDefinition::from(
+                        1,
+                        'a',
+                        Type::string(),
+                    ),
+                    FieldDefinition::from(
+                        2,
+                        'b',
+                        Type::string(),
+                    ),
+                    FieldDefinition::from(
+                        3,
+                        'c',
+                        Type::string(),
+                    ),
+                ),
+                __DIR__ . '/../fixture/fixture_escaped_values.csv',
+                false,
+                null,
+                null,
+            ],
         ];
     }
 
@@ -178,5 +210,15 @@ final class ParserTest extends TestCase
         $this->expectExceptionMessage('Enclosure must be a single-byte character');
 
         $parser->setEnclosure('..');
+    }
+
+    public function testRejectsInvalidEscape(): void
+    {
+        $parser = new Parser;
+
+        $this->expectException(InvalidEscapeException::class);
+        $this->expectExceptionMessage('Escape must be a single-byte character');
+
+        $parser->setEscape('..');
     }
 }
