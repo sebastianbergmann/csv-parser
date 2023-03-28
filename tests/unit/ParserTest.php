@@ -19,7 +19,7 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(Parser::class)]
 #[CoversClass(InvalidSeparatorException::class)]
 #[UsesClass(Schema::class)]
-#[UsesClass(ColumnDefinition::class)]
+#[UsesClass(FieldDefinition::class)]
 #[UsesClass(Type::class)]
 #[UsesClass(FloatType::class)]
 #[UsesClass(IntegerType::class)]
@@ -31,7 +31,7 @@ final class ParserTest extends TestCase
     public static function provider(): array
     {
         return [
-            'CSV file with header; schema for all columns' => [
+            'CSV file with header; schema for all fields' => [
                 [
                     [
                         'a' => 1,
@@ -42,32 +42,32 @@ final class ParserTest extends TestCase
                     ],
                 ],
                 Schema::from(
-                    ColumnDefinition::from(1, 'a', Type::integer()),
-                    ColumnDefinition::from(2, 'b', Type::float()),
-                    ColumnDefinition::from(3, 'c', Type::string()),
-                    ColumnDefinition::from(4, 'd', Type::boolean()),
-                    ColumnDefinition::from(5, 'e', Type::boolean()),
+                    FieldDefinition::from(1, 'a', Type::integer()),
+                    FieldDefinition::from(2, 'b', Type::float()),
+                    FieldDefinition::from(3, 'c', Type::string()),
+                    FieldDefinition::from(4, 'd', Type::boolean()),
+                    FieldDefinition::from(5, 'e', Type::boolean()),
                 ),
                 __DIR__ . '/../fixture/fixture_with_header.csv',
                 true,
                 null,
             ],
 
-            'CSV file with header; schema for subset of columns' => [
+            'CSV file with header; schema for subset of fields' => [
                 [
                     [
                         'b' => 2.0,
                     ],
                 ],
                 Schema::from(
-                    ColumnDefinition::from(2, 'b', Type::float()),
+                    FieldDefinition::from(2, 'b', Type::float()),
                 ),
                 __DIR__ . '/../fixture/fixture_with_header.csv',
                 true,
                 null,
             ],
 
-            'CSV file without header; schema for all columns' => [
+            'CSV file without header; schema for all fields' => [
                 [
                     [
                         'a' => 1,
@@ -78,25 +78,25 @@ final class ParserTest extends TestCase
                     ],
                 ],
                 Schema::from(
-                    ColumnDefinition::from(1, 'a', Type::integer()),
-                    ColumnDefinition::from(2, 'b', Type::float()),
-                    ColumnDefinition::from(3, 'c', Type::string()),
-                    ColumnDefinition::from(4, 'd', Type::boolean()),
-                    ColumnDefinition::from(5, 'e', Type::boolean()),
+                    FieldDefinition::from(1, 'a', Type::integer()),
+                    FieldDefinition::from(2, 'b', Type::float()),
+                    FieldDefinition::from(3, 'c', Type::string()),
+                    FieldDefinition::from(4, 'd', Type::boolean()),
+                    FieldDefinition::from(5, 'e', Type::boolean()),
                 ),
                 __DIR__ . '/../fixture/fixture_without_header.csv',
                 false,
                 null,
             ],
 
-            'CSV file without header; schema for subset of columns' => [
+            'CSV file without header; schema for subset of fields' => [
                 [
                     [
                         'b' => 2.0,
                     ],
                 ],
                 Schema::from(
-                    ColumnDefinition::from(2, 'b', Type::float()),
+                    FieldDefinition::from(2, 'b', Type::float()),
                 ),
                 __DIR__ . '/../fixture/fixture_without_header.csv',
                 false,
@@ -114,11 +114,11 @@ final class ParserTest extends TestCase
                     ],
                 ],
                 Schema::from(
-                    ColumnDefinition::from(1, 'a', Type::integer()),
-                    ColumnDefinition::from(2, 'b', Type::float()),
-                    ColumnDefinition::from(3, 'c', Type::string()),
-                    ColumnDefinition::from(4, 'd', Type::boolean()),
-                    ColumnDefinition::from(5, 'e', Type::boolean()),
+                    FieldDefinition::from(1, 'a', Type::integer()),
+                    FieldDefinition::from(2, 'b', Type::float()),
+                    FieldDefinition::from(3, 'c', Type::string()),
+                    FieldDefinition::from(4, 'd', Type::boolean()),
+                    FieldDefinition::from(5, 'e', Type::boolean()),
                 ),
                 __DIR__ . '/../fixture/fixture_non_default_separator.csv',
                 false,

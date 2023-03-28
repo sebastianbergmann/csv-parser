@@ -15,7 +15,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(Schema::class)]
-#[UsesClass(ColumnDefinition::class)]
+#[UsesClass(FieldDefinition::class)]
 #[UsesClass(Type::class)]
 #[UsesClass(BooleanType::class)]
 #[UsesClass(IntegerType::class)]
@@ -24,13 +24,13 @@ use PHPUnit\Framework\TestCase;
 #[Small]
 final class SchemaTest extends TestCase
 {
-    public function testAppliesColumnDefinitionsToMapInputArrayToOutputArray(): void
+    public function testAppliesFieldDefinitionsToMapInputArrayToOutputArray(): void
     {
         $schema = Schema::from(
-            ColumnDefinition::from(1, 'a', Type::integer()),
-            ColumnDefinition::from(2, 'b', Type::float()),
-            ColumnDefinition::from(3, 'c', Type::string()),
-            ColumnDefinition::from(4, 'd', Type::boolean()),
+            FieldDefinition::from(1, 'a', Type::integer()),
+            FieldDefinition::from(2, 'b', Type::float()),
+            FieldDefinition::from(3, 'c', Type::string()),
+            FieldDefinition::from(4, 'd', Type::boolean()),
         );
 
         $this->assertSame(

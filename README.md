@@ -33,17 +33,17 @@ composer require --dev sebastian/csv-parser
 <?php declare(strict_types=1);
 use SebastianBergmann\CsvParser\Parser;
 use SebastianBergmann\CsvParser\Schema;
-use SebastianBergmann\CsvParser\ColumnDefinition;
+use SebastianBergmann\CsvParser\FieldDefinition;
 use SebastianBergmann\CsvParser\Type;
 use SebastianBergmann\CsvParser\ObjectMapper;
 
 $schema = Schema::from(
-    ColumnDefinition::from(1, 'a', Type::integer()),
-    ColumnDefinition::from(2, 'b', Type::float()),
-    ColumnDefinition::from(3, 'c', Type::string()),
-    ColumnDefinition::from(4, 'd', Type::boolean()),
-    ColumnDefinition::from(5, 'e', Type::boolean()),
-    ColumnDefinition::from(6, 'f', Type::object(
+    FieldDefinition::from(1, 'a', Type::integer()),
+    FieldDefinition::from(2, 'b', Type::float()),
+    FieldDefinition::from(3, 'c', Type::string()),
+    FieldDefinition::from(4, 'd', Type::boolean()),
+    FieldDefinition::from(5, 'e', Type::boolean()),
+    FieldDefinition::from(6, 'f', Type::object(
         new class implements ObjectMapper
         {
             public function map(string $value): DateTimeImmutable

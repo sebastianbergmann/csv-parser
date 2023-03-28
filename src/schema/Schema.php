@@ -20,23 +20,23 @@ use function assert;
 final class Schema
 {
     /**
-     * @psalm-var list<ColumnDefinition>
+     * @psalm-var list<FieldDefinition>
      */
-    private readonly array $columnDefinitions;
+    private readonly array $fieldDefinitions;
 
-    public static function from(ColumnDefinition ...$columnDefinitions): self
+    public static function from(FieldDefinition ...$fieldDefinitions): self
     {
-        assert(array_is_list($columnDefinitions));
+        assert(array_is_list($fieldDefinitions));
 
-        return new self($columnDefinitions);
+        return new self($fieldDefinitions);
     }
 
     /**
-     * @psalm-param list<ColumnDefinition> $columnDefinitions
+     * @psalm-param list<FieldDefinition> $fieldDefinitions
      */
-    private function __construct(array $columnDefinitions)
+    private function __construct(array $fieldDefinitions)
     {
-        $this->columnDefinitions = $columnDefinitions;
+        $this->fieldDefinitions = $fieldDefinitions;
     }
 
     /**
@@ -48,8 +48,8 @@ final class Schema
     {
         $data = [];
 
-        foreach ($this->columnDefinitions as $columnDefinition) {
-            $columnDefinition->apply($line, $data);
+        foreach ($this->fieldDefinitions as $fieldDefinition) {
+            $fieldDefinition->apply($line, $data);
         }
 
         return $data;

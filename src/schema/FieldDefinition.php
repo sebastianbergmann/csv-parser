@@ -16,7 +16,7 @@ use function array_key_exists;
  *
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise for this library
  */
-final class ColumnDefinition
+final class FieldDefinition
 {
     /**
      * @psalm-var positive-int

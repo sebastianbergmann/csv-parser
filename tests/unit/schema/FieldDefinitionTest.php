@@ -14,35 +14,35 @@ use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
-#[CoversClass(ColumnDefinition::class)]
+#[CoversClass(FieldDefinition::class)]
 #[UsesClass(Type::class)]
 #[UsesClass(IntegerType::class)]
 #[Small]
-final class ColumnDefinitionTest extends TestCase
+final class FieldDefinitionTest extends TestCase
 {
-    public function test_Parses_column_from_input_array_into_output_array(): void
+    public function test_Parses_field_from_line_array_into_record_array(): void
     {
-        $input  = ['1'];
-        $output = [];
+        $line   = ['1'];
+        $record = [];
 
-        $this->column()->apply($input, $output);
+        $this->field()->apply($line, $record);
 
-        $this->assertSame(['name' => 1], $output);
+        $this->assertSame(['name' => 1], $record);
     }
 
-    public function testCannotParseColumnFromInputArrayThatDoesNotExist(): void
+    public function testCannotParseFieldFromLineArrayThatDoesNotExist(): void
     {
-        $input  = [];
-        $output = [];
+        $line   = [];
+        $record = [];
 
         $this->expectException(OutOfBoundsException::class);
         $this->expectExceptionMessage('Input array does not have an element at position 1');
 
-        $this->column()->apply($input, $output);
+        $this->field()->apply($line, $record);
     }
 
-    private function column(): ColumnDefinition
+    private function field(): FieldDefinition
     {
-        return ColumnDefinition::from(1, 'name', Type::integer());
+        return FieldDefinition::from(1, 'name', Type::integer());
     }
 }
