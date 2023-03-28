@@ -31,24 +31,38 @@ final class ParserTest extends TestCase
 {
     public static function provider(): array
     {
+        $allFieldsSchema = Schema::from(
+            FieldDefinition::from(1, 'a', Type::integer()),
+            FieldDefinition::from(2, 'b', Type::float()),
+            FieldDefinition::from(3, 'c', Type::string()),
+            FieldDefinition::from(4, 'd', Type::boolean()),
+            FieldDefinition::from(5, 'e', Type::boolean()),
+        );
+
+        $allFieldsExpectation = [
+            [
+                'a' => 1,
+                'b' => 2.0,
+                'c' => '3',
+                'd' => true,
+                'e' => false,
+            ],
+        ];
+
+        $singleFieldSchema = Schema::from(
+            FieldDefinition::from(2, 'b', Type::float()),
+        );
+
+        $singleFieldExpectation = [
+            [
+                'b' => 2.0,
+            ],
+        ];
+
         return [
             'CSV file with header; schema for all fields' => [
-                [
-                    [
-                        'a' => 1,
-                        'b' => 2.0,
-                        'c' => '3',
-                        'd' => true,
-                        'e' => false,
-                    ],
-                ],
-                Schema::from(
-                    FieldDefinition::from(1, 'a', Type::integer()),
-                    FieldDefinition::from(2, 'b', Type::float()),
-                    FieldDefinition::from(3, 'c', Type::string()),
-                    FieldDefinition::from(4, 'd', Type::boolean()),
-                    FieldDefinition::from(5, 'e', Type::boolean()),
-                ),
+                $allFieldsExpectation,
+                $allFieldsSchema,
                 __DIR__ . '/../fixture/fixture_with_header.csv',
                 true,
                 null,
@@ -56,14 +70,8 @@ final class ParserTest extends TestCase
             ],
 
             'CSV file with header; schema for subset of fields' => [
-                [
-                    [
-                        'b' => 2.0,
-                    ],
-                ],
-                Schema::from(
-                    FieldDefinition::from(2, 'b', Type::float()),
-                ),
+                $singleFieldExpectation,
+                $singleFieldSchema,
                 __DIR__ . '/../fixture/fixture_with_header.csv',
                 true,
                 null,
@@ -71,22 +79,8 @@ final class ParserTest extends TestCase
             ],
 
             'CSV file without header; schema for all fields' => [
-                [
-                    [
-                        'a' => 1,
-                        'b' => 2.0,
-                        'c' => '3',
-                        'd' => true,
-                        'e' => false,
-                    ],
-                ],
-                Schema::from(
-                    FieldDefinition::from(1, 'a', Type::integer()),
-                    FieldDefinition::from(2, 'b', Type::float()),
-                    FieldDefinition::from(3, 'c', Type::string()),
-                    FieldDefinition::from(4, 'd', Type::boolean()),
-                    FieldDefinition::from(5, 'e', Type::boolean()),
-                ),
+                $allFieldsExpectation,
+                $allFieldsSchema,
                 __DIR__ . '/../fixture/fixture_without_header.csv',
                 false,
                 null,
@@ -94,14 +88,8 @@ final class ParserTest extends TestCase
             ],
 
             'CSV file without header; schema for subset of fields' => [
-                [
-                    [
-                        'b' => 2.0,
-                    ],
-                ],
-                Schema::from(
-                    FieldDefinition::from(2, 'b', Type::float()),
-                ),
+                $singleFieldExpectation,
+                $singleFieldSchema,
                 __DIR__ . '/../fixture/fixture_without_header.csv',
                 false,
                 null,
@@ -109,22 +97,8 @@ final class ParserTest extends TestCase
             ],
 
             'CSV file with enclosed values (default enclosure)' => [
-                [
-                    [
-                        'a' => 1,
-                        'b' => 2.0,
-                        'c' => '3',
-                        'd' => true,
-                        'e' => false,
-                    ],
-                ],
-                Schema::from(
-                    FieldDefinition::from(1, 'a', Type::integer()),
-                    FieldDefinition::from(2, 'b', Type::float()),
-                    FieldDefinition::from(3, 'c', Type::string()),
-                    FieldDefinition::from(4, 'd', Type::boolean()),
-                    FieldDefinition::from(5, 'e', Type::boolean()),
-                ),
+                $allFieldsExpectation,
+                $allFieldsSchema,
                 __DIR__ . '/../fixture/fixture_enclosed_values.csv',
                 false,
                 null,
@@ -132,22 +106,8 @@ final class ParserTest extends TestCase
             ],
 
             'CSV file with enclosed values (non-default enclosure)' => [
-                [
-                    [
-                        'a' => 1,
-                        'b' => 2.0,
-                        'c' => '3',
-                        'd' => true,
-                        'e' => false,
-                    ],
-                ],
-                Schema::from(
-                    FieldDefinition::from(1, 'a', Type::integer()),
-                    FieldDefinition::from(2, 'b', Type::float()),
-                    FieldDefinition::from(3, 'c', Type::string()),
-                    FieldDefinition::from(4, 'd', Type::boolean()),
-                    FieldDefinition::from(5, 'e', Type::boolean()),
-                ),
+                $allFieldsExpectation,
+                $allFieldsSchema,
                 __DIR__ . '/../fixture/fixture_enclosed_values_non_default_enclosure.csv',
                 false,
                 null,
@@ -155,22 +115,8 @@ final class ParserTest extends TestCase
             ],
 
             'CSV file with non-default separator' => [
-                [
-                    [
-                        'a' => 1,
-                        'b' => 2.0,
-                        'c' => '3',
-                        'd' => true,
-                        'e' => false,
-                    ],
-                ],
-                Schema::from(
-                    FieldDefinition::from(1, 'a', Type::integer()),
-                    FieldDefinition::from(2, 'b', Type::float()),
-                    FieldDefinition::from(3, 'c', Type::string()),
-                    FieldDefinition::from(4, 'd', Type::boolean()),
-                    FieldDefinition::from(5, 'e', Type::boolean()),
-                ),
+                $allFieldsExpectation,
+                $allFieldsSchema,
                 __DIR__ . '/../fixture/fixture_non_default_separator.csv',
                 false,
                 ';',
