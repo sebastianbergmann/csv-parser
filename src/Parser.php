@@ -21,6 +21,7 @@ use SplFileObject;
 final class Parser
 {
     private string $separator     = ',';
+    private string $enclosure     = '"';
     private bool $ignoreFirstLine = false;
 
     /**
@@ -38,7 +39,7 @@ final class Parser
         }
 
         $file->setFlags(SplFileObject::READ_CSV | SplFileObject::SKIP_EMPTY | SplFileObject::DROP_NEW_LINE);
-        $file->setCsvControl($this->separator);
+        $file->setCsvControl($this->separator, $this->enclosure);
 
         return $this->generator($file, $schema);
     }
@@ -53,6 +54,18 @@ final class Parser
         }
 
         $this->separator = $separator;
+    }
+
+    /**
+     * @throws InvalidEnclosureException
+     */
+    public function setEnclosure(string $enclosure): void
+    {
+        if (strlen($enclosure) !== 1) {
+            throw new InvalidEnclosureException;
+        }
+
+        $this->enclosure = $enclosure;
     }
 
     public function ignoreFirstLine(): void

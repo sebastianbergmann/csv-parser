@@ -18,6 +18,7 @@ use PHPUnit\Framework\TestCase;
 
 #[CoversClass(Parser::class)]
 #[CoversClass(InvalidSeparatorException::class)]
+#[CoversClass(InvalidEnclosureException::class)]
 #[UsesClass(Schema::class)]
 #[UsesClass(FieldDefinition::class)]
 #[UsesClass(Type::class)]
@@ -51,6 +52,7 @@ final class ParserTest extends TestCase
                 __DIR__ . '/../fixture/fixture_with_header.csv',
                 true,
                 null,
+                null,
             ],
 
             'CSV file with header; schema for subset of fields' => [
@@ -64,6 +66,7 @@ final class ParserTest extends TestCase
                 ),
                 __DIR__ . '/../fixture/fixture_with_header.csv',
                 true,
+                null,
                 null,
             ],
 
@@ -87,6 +90,7 @@ final class ParserTest extends TestCase
                 __DIR__ . '/../fixture/fixture_without_header.csv',
                 false,
                 null,
+                null,
             ],
 
             'CSV file without header; schema for subset of fields' => [
@@ -101,6 +105,53 @@ final class ParserTest extends TestCase
                 __DIR__ . '/../fixture/fixture_without_header.csv',
                 false,
                 null,
+                null,
+            ],
+
+            'CSV file with enclosed values (default enclosure)' => [
+                [
+                    [
+                        'a' => 1,
+                        'b' => 2.0,
+                        'c' => '3',
+                        'd' => true,
+                        'e' => false,
+                    ],
+                ],
+                Schema::from(
+                    FieldDefinition::from(1, 'a', Type::integer()),
+                    FieldDefinition::from(2, 'b', Type::float()),
+                    FieldDefinition::from(3, 'c', Type::string()),
+                    FieldDefinition::from(4, 'd', Type::boolean()),
+                    FieldDefinition::from(5, 'e', Type::boolean()),
+                ),
+                __DIR__ . '/../fixture/fixture_enclosed_values.csv',
+                false,
+                null,
+                null,
+            ],
+
+            'CSV file with enclosed values (non-default enclosure)' => [
+                [
+                    [
+                        'a' => 1,
+                        'b' => 2.0,
+                        'c' => '3',
+                        'd' => true,
+                        'e' => false,
+                    ],
+                ],
+                Schema::from(
+                    FieldDefinition::from(1, 'a', Type::integer()),
+                    FieldDefinition::from(2, 'b', Type::float()),
+                    FieldDefinition::from(3, 'c', Type::string()),
+                    FieldDefinition::from(4, 'd', Type::boolean()),
+                    FieldDefinition::from(5, 'e', Type::boolean()),
+                ),
+                __DIR__ . '/../fixture/fixture_enclosed_values_non_default_enclosure.csv',
+                false,
+                null,
+                '\'',
             ],
 
             'CSV file with non-default separator' => [
@@ -123,17 +174,22 @@ final class ParserTest extends TestCase
                 __DIR__ . '/../fixture/fixture_non_default_separator.csv',
                 false,
                 ';',
+                null,
             ],
         ];
     }
 
     #[DataProvider('provider')]
-    public function test_Parses_CSV_file_according_to_schema(array $expected, Schema $schema, string $filename, bool $ignoreFirstLine, ?string $separator): void
+    public function test_Parses_CSV_file_according_to_schema(array $expected, Schema $schema, string $filename, bool $ignoreFirstLine, ?string $separator, ?string $enclosure): void
     {
         $parser = new Parser;
 
         if ($separator !== null) {
             $parser->setSeparator($separator);
+        }
+
+        if ($enclosure !== null) {
+            $parser->setEnclosure($enclosure);
         }
 
         if ($ignoreFirstLine) {
@@ -166,5 +222,15 @@ final class ParserTest extends TestCase
         $this->expectExceptionMessage('Separator must be a single-byte character');
 
         $parser->setSeparator('..');
+    }
+
+    public function testRejectsInvalidEnclosure(): void
+    {
+        $parser = new Parser;
+
+        $this->expectException(InvalidEnclosureException::class);
+        $this->expectExceptionMessage('Enclosure must be a single-byte character');
+
+        $parser->setEnclosure('..');
     }
 }
