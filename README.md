@@ -56,16 +56,16 @@ $schema = Schema::from(
 
 $parser = new Parser;
 
-foreach ($parser->parse('example.csv', $schema) as $row) {
-    var_dump($row);
+foreach ($parser->parse('example.csv', $schema) as $record) {
+    var_dump($record);
 }
 ```
 
 The example above shows how to use a `Schema` object to configure how a string from a line of comma-separated values is parsed into an array element:
 
 * `1` refers to the position of the string in the line of comma-separated values
-* `'a'` specifies the key for the value in the associative array that is generated for each row
-* `Type::integer()` specifies the type that should be used to store the value in the associative array that is generated for each row
+* `'a'` specifies the key for the value in the associative array that is generated for each record
+* `Type::integer()` specifies the type that should be used to store the value in the associative array that is generated for each record
 
 The following types are available:
 
