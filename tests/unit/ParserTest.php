@@ -68,6 +68,7 @@ final class ParserTest extends TestCase
                 true,
                 null,
                 null,
+                null,
             ],
 
             'CSV file with header; schema for subset of fields' => [
@@ -75,6 +76,7 @@ final class ParserTest extends TestCase
                 $singleFieldSchema,
                 __DIR__ . '/../fixture/fixture_with_header.csv',
                 true,
+                null,
                 null,
                 null,
             ],
@@ -86,6 +88,7 @@ final class ParserTest extends TestCase
                 false,
                 null,
                 null,
+                null,
             ],
 
             'CSV file without header; schema for subset of fields' => [
@@ -93,6 +96,7 @@ final class ParserTest extends TestCase
                 $singleFieldSchema,
                 __DIR__ . '/../fixture/fixture_without_header.csv',
                 false,
+                null,
                 null,
                 null,
             ],
@@ -104,6 +108,7 @@ final class ParserTest extends TestCase
                 false,
                 null,
                 null,
+                null,
             ],
 
             'CSV file with enclosed values (non-default enclosure)' => [
@@ -113,6 +118,7 @@ final class ParserTest extends TestCase
                 false,
                 null,
                 '\'',
+                null,
             ],
 
             'CSV file with non-default separator' => [
@@ -121,6 +127,7 @@ final class ParserTest extends TestCase
                 __DIR__ . '/../fixture/fixture_non_default_separator.csv',
                 false,
                 ';',
+                null,
                 null,
             ],
 
@@ -153,12 +160,13 @@ final class ParserTest extends TestCase
                 false,
                 null,
                 null,
+                '"',
             ],
         ];
     }
 
     #[DataProvider('provider')]
-    public function test_Parses_CSV_file_according_to_schema(array $expected, Schema $schema, string $filename, bool $ignoreFirstLine, ?string $separator, ?string $enclosure): void
+    public function test_Parses_CSV_file_according_to_schema(array $expected, Schema $schema, string $filename, bool $ignoreFirstLine, ?string $separator, ?string $enclosure, ?string $escape): void
     {
         $parser = new Parser;
 
@@ -168,6 +176,10 @@ final class ParserTest extends TestCase
 
         if ($enclosure !== null) {
             $parser->setEnclosure($enclosure);
+        }
+
+        if ($escape !== null) {
+            $parser->setEscape($escape);
         }
 
         if ($ignoreFirstLine) {
