@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phive xmlns="https://phar.io/phive">
-  <phar name="composer" version="^2.5" installed="2.6.4" location="./tools/composer" copy="true"/>
-  <phar name="phpunit" version="^10.0" installed="10.3.5" location="./tools/phpunit" copy="true"/>
-  <phar name="php-cs-fixer" version="^3.15" installed="3.30.0" location="./tools/php-cs-fixer" copy="true"/>
+  <phar name="composer" version="^2.5" installed="2.6.5" location="./tools/composer" copy="true"/>
+  <phar name="phpunit" version="^10.0" installed="10.4.0" location="./tools/phpunit" copy="true"/>
+  <phar name="php-cs-fixer" version="^3.15" installed="3.34.1" location="./tools/php-cs-fixer" copy="true"/>
   <phar name="psalm" version="^5.8" installed="5.15.0" location="./tools/psalm" copy="true"/>
   <phar name="infection" version="^0.26" installed="0.26.21" location="./tools/infection" copy="true"/>
 </phive>
