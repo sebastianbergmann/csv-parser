@@ -192,8 +192,8 @@ final class ParserTest extends TestCase
                 $parser->parse(
                     $filename,
                     $schema,
-                )
-            )
+                ),
+            ),
         );
     }
 

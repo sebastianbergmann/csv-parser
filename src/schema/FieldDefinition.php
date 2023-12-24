@@ -59,7 +59,7 @@ final class FieldDefinition
     {
         if (!array_key_exists($this->position - 1, $input)) {
             throw new OutOfBoundsException(
-                'Input array does not have an element at position ' . $this->position
+                'Input array does not have an element at position ' . $this->position,
             );
         }
 

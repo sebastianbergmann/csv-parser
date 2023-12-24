@@ -45,5 +45,5 @@ abstract class Type
     {
     }
 
-    abstract public function apply(string $value): bool|int|float|object|string;
+    abstract public function apply(string $value): bool|float|int|object|string;
 }
