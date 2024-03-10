@@ -18,6 +18,7 @@ final class ObjectType extends Type
 {
     private ObjectMapper $mapper;
 
+    /** @noinspection PhpMissingParentConstructorInspection */
     protected function __construct(ObjectMapper $mapper)
     {
         $this->mapper = $mapper;
