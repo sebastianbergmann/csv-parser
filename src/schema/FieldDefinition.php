@@ -16,18 +16,18 @@ use function array_key_exists;
  *
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise for this library
  */
-final class FieldDefinition
+final readonly class FieldDefinition
 {
     /**
      * @psalm-var positive-int
      */
-    private readonly int $position;
+    private int $position;
 
     /**
      * @psalm-var non-empty-string
      */
-    private readonly string $name;
-    private readonly Type $type;
+    private string $name;
+    private Type $type;
 
     /**
      * @psalm-param positive-int $position

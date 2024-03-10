@@ -17,12 +17,12 @@ use function assert;
  *
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise for this library
  */
-final class Schema
+final readonly class Schema
 {
     /**
      * @psalm-var list<FieldDefinition>
      */
-    private readonly array $fieldDefinitions;
+    private array $fieldDefinitions;
 
     public static function from(FieldDefinition ...$fieldDefinitions): self
     {
