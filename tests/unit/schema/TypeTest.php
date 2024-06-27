@@ -49,7 +49,10 @@ final class TypeTest extends TestCase
             }
         };
 
-        $this->assertSame('2023-03-24', Type::object($callback)->apply('2023-03-24')->format('Y-m-d'));
+        $object = Type::object($callback)->apply('2023-03-24');
+
+        $this->assertInstanceOf(DateTimeImmutable::class, $object);
+        $this->assertSame('2023-03-24', $object->format('Y-m-d'));
     }
 
     public function testKeepsStringsAsTheyAre(): void

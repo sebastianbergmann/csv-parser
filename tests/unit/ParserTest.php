@@ -30,6 +30,9 @@ use PHPUnit\Framework\TestCase;
 #[Small]
 final class ParserTest extends TestCase
 {
+    /**
+     * @return non-empty-array<non-empty-string, array{0: array, 1: Schema, 2: non-empty-string, 3: bool, 4: ?non-empty-string, 5: ?non-empty-string, 6: ?non-empty-string}>
+     */
     public static function provider(): array
     {
         $allFieldsSchema = Schema::from(
@@ -165,6 +168,9 @@ final class ParserTest extends TestCase
         ];
     }
 
+    /**
+     * @param array<string, bool|float|int|object|string> $expected
+     */
     #[DataProvider('provider')]
     public function test_Parses_CSV_file_according_to_schema(array $expected, Schema $schema, string $filename, bool $ignoreFirstLine, ?string $separator, ?string $enclosure, ?string $escape): void
     {
