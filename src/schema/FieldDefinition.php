@@ -12,26 +12,26 @@ namespace SebastianBergmann\CsvParser;
 use function array_key_exists;
 
 /**
- * @psalm-immutable
+ * @immutable
  *
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise for this library
  */
 final readonly class FieldDefinition
 {
     /**
-     * @psalm-var positive-int
+     * @var positive-int
      */
     private int $position;
 
     /**
-     * @psalm-var non-empty-string
+     * @var non-empty-string
      */
     private string $name;
     private Type $type;
 
     /**
-     * @psalm-param positive-int $position
-     * @psalm-param non-empty-string $name
+     * @param positive-int     $position
+     * @param non-empty-string $name
      */
     public static function from(int $position, string $name, Type $type): self
     {
@@ -39,8 +39,8 @@ final readonly class FieldDefinition
     }
 
     /**
-     * @psalm-param positive-int $position
-     * @psalm-param non-empty-string $name
+     * @param positive-int     $position
+     * @param non-empty-string $name
      */
     private function __construct(int $position, string $name, Type $type)
     {
@@ -50,8 +50,8 @@ final readonly class FieldDefinition
     }
 
     /**
-     * @psalm-param list<string> $input
-     * @psalm-param array<string, bool|int|float|object|string> $output
+     * @param list<string>                                $input
+     * @param array<string, bool|float|int|object|string> $output
      *
      * @throws OutOfBoundsException
      */

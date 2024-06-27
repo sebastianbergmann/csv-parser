@@ -26,10 +26,10 @@ final class Parser
     private bool $ignoreFirstLine = false;
 
     /**
-     * @psalm-return Generator<int, array<string, bool|int|float|object|string>>
-     *
      * @throws CannotReadCsvFileException
      * @throws OutOfBoundsException
+     *
+     * @return Generator<int, array<string, bool|float|int|object|string>>
      */
     public function parse(string $filename, Schema $schema): Generator
     {
@@ -87,7 +87,7 @@ final class Parser
     }
 
     /**
-     * @psalm-return Generator<int, array<string, bool|int|float|object|string>>
+     * @return Generator<int, array<string, bool|float|int|object|string>>
      */
     private function generator(SplFileObject $file, Schema $schema): Generator
     {

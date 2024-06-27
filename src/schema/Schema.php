@@ -13,14 +13,14 @@ use function array_is_list;
 use function assert;
 
 /**
- * @psalm-immutable
+ * @immutable
  *
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise for this library
  */
 final readonly class Schema
 {
     /**
-     * @psalm-var list<FieldDefinition>
+     * @var list<FieldDefinition>
      */
     private array $fieldDefinitions;
 
@@ -32,7 +32,7 @@ final readonly class Schema
     }
 
     /**
-     * @psalm-param list<FieldDefinition> $fieldDefinitions
+     * @param list<FieldDefinition> $fieldDefinitions
      */
     private function __construct(array $fieldDefinitions)
     {
@@ -40,9 +40,9 @@ final readonly class Schema
     }
 
     /**
-     * @psalm-param list<string> $line
+     * @param list<string> $line
      *
-     * @psalm-return array<string, bool|int|float|object|string>
+     * @return array<string, bool|float|int|object|string>
      */
     public function apply(array $line): array
     {

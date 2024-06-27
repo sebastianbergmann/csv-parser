@@ -1,6 +1,5 @@
 [![Latest Stable Version](https://poser.pugx.org/sebastian/csv-parser/v/stable.png)](https://packagist.org/packages/sebastian/csv-parser)
 [![CI Status](https://github.com/sebastianbergmann/csv-parser/workflows/CI/badge.svg)](https://github.com/sebastianbergmann/csv-parser/actions)
-[![Type Coverage](https://shepherd.dev/github/sebastianbergmann/csv-parser/coverage.svg)](https://shepherd.dev/github/sebastianbergmann/csv-parser)
 [![codecov](https://codecov.io/gh/sebastianbergmann/csv-parser/branch/main/graph/badge.svg)](https://codecov.io/gh/sebastianbergmann/csv-parser)
 
 # sebastian/csv-parser
