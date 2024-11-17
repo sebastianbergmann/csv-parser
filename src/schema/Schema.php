@@ -9,9 +9,6 @@
  */
 namespace SebastianBergmann\CsvParser;
 
-use function array_is_list;
-use function assert;
-
 /**
  * @immutable
  *
@@ -26,8 +23,6 @@ final readonly class Schema
 
     public static function from(FieldDefinition ...$fieldDefinitions): self
     {
-        assert(array_is_list($fieldDefinitions));
-
         return new self($fieldDefinitions);
     }
 

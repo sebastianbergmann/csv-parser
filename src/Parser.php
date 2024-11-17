@@ -104,6 +104,7 @@ final class Parser
                 continue;
             }
 
+            /** @phpstan-ignore argument.type */
             yield $schema->apply($line);
         }
     }
