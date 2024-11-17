@@ -135,7 +135,7 @@ $config->setFinder($finder)
         'modernize_types_casting' => true,
         'multiline_comment_opening_closing' => true,
         'multiline_whitespace_before_semicolons' => true,
-        'native_constant_invocation' => false,
+        'native_constant_invocation' => true,
         'native_function_casing' => false,
         'native_function_invocation' => [
             'include' => [
@@ -158,7 +158,23 @@ $config->setFinder($finder)
         'no_empty_comment' => true,
         'no_empty_phpdoc' => true,
         'no_empty_statement' => true,
-        'no_extra_blank_lines' => true,
+        'no_extra_blank_lines' => [
+            'tokens' => [
+                'attribute',
+                'break',
+                'case',
+                'continue',
+                'curly_brace_block',
+                'default',
+                'extra',
+                'parenthesis_brace_block',
+                'return',
+                'square_brace_block',
+                'switch',
+                'throw',
+                'use',
+            ],
+        ],
         'no_homoglyph_names' => true,
         'no_leading_import_slash' => true,
         'no_leading_namespace_whitespace' => true,
@@ -341,6 +357,8 @@ $config->setFinder($finder)
         'whitespace_after_comma_in_array' => true,
     ]);
 
-$config->setCacheFile(__DIR__ . '/.php-cs-fixer.cache/' . sha1(@trim((string) @shell_exec('git rev-parse --abbrev-ref HEAD'))));
+$config->setCacheFile(__DIR__ . '/.php-cs-fixer.cache/' . json_decode((string) @file_get_contents('composer.json'), true)["extra"]["branch-alias"]["dev-main"] ?? 'unknown');
+
+$config->setParallelConfig(\PhpCsFixer\Runner\Parallel\ParallelConfigFactory::detect());
 
 return $config;
