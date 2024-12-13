@@ -1,3 +1,4 @@
+[![No Maintenance Intended](https://unmaintained.tech/badge.svg)](https://unmaintained.tech/)
 [![Latest Stable Version](https://poser.pugx.org/sebastian/csv-parser/v)](https://packagist.org/packages/sebastian/csv-parser)
 [![CI Status](https://github.com/sebastianbergmann/csv-parser/workflows/CI/badge.svg)](https://github.com/sebastianbergmann/csv-parser/actions)
 [![codecov](https://codecov.io/gh/sebastianbergmann/csv-parser/branch/main/graph/badge.svg)](https://codecov.io/gh/sebastianbergmann/csv-parser)
@@ -112,3 +113,5 @@ The `$parser->setSeparator()` method can be used to configure the parser to use 
 The `$parser->setEnclosure()` method can be used to configure the parser to use an enclosure different from the default `"`.
 
 The `$parser->setEscape()` method can be used to configure the parser to use an escape different from the default `"`.
+
+Please note that this is a [low maintenance project](https://github.com/sebastianbergmann/csv-parser/blob/main/.github/CONTRIBUTING.md#low-maintenance-project).
