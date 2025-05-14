@@ -7,10 +7,8 @@
          requireCoverageMetadata="true"
          beStrictAboutCoverageMetadata="true"
          beStrictAboutOutputDuringTests="true"
-         displayDetailsOnPhpunitDeprecations="true"
-         failOnPhpunitDeprecation="true"
-         failOnRisky="true"
-         failOnWarning="true"
+         displayDetailsOnAllIssues="true"
+         failOnAllIssues="true"
          colors="true">
     <testsuites>
         <testsuite name="unit">
