@@ -22,7 +22,6 @@ final class Parser
 {
     private string $separator     = ',';
     private string $enclosure     = '"';
-    private string $escape        = '"';
     private bool $ignoreFirstLine = false;
 
     /**
@@ -40,7 +39,7 @@ final class Parser
         }
 
         $file->setFlags(SplFileObject::READ_CSV | SplFileObject::SKIP_EMPTY | SplFileObject::DROP_NEW_LINE);
-        $file->setCsvControl($this->separator, $this->enclosure, $this->escape);
+        $file->setCsvControl($this->separator, $this->enclosure, '');
 
         return $this->generator($file, $schema);
     }
@@ -67,18 +66,6 @@ final class Parser
         }
 
         $this->enclosure = $enclosure;
-    }
-
-    /**
-     * @throws InvalidEscapeException
-     */
-    public function setEscape(string $escape): void
-    {
-        if (strlen($escape) !== 1) {
-            throw new InvalidEscapeException;
-        }
-
-        $this->escape = $escape;
     }
 
     public function ignoreFirstLine(): void

@@ -19,7 +19,6 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(Parser::class)]
 #[CoversClass(InvalidSeparatorException::class)]
 #[CoversClass(InvalidEnclosureException::class)]
-#[CoversClass(InvalidEscapeException::class)]
 #[UsesClass(Schema::class)]
 #[UsesClass(FieldDefinition::class)]
 #[UsesClass(Type::class)]
@@ -172,7 +171,7 @@ final class ParserTest extends TestCase
      * @param array<string, bool|float|int|object|string> $expected
      */
     #[DataProvider('provider')]
-    public function test_Parses_CSV_file_according_to_schema(array $expected, Schema $schema, string $filename, bool $ignoreFirstLine, ?string $separator, ?string $enclosure, ?string $escape): void
+    public function test_Parses_CSV_file_according_to_schema(array $expected, Schema $schema, string $filename, bool $ignoreFirstLine, ?string $separator, ?string $enclosure): void
     {
         $parser = new Parser;
 
@@ -182,10 +181,6 @@ final class ParserTest extends TestCase
 
         if ($enclosure !== null) {
             $parser->setEnclosure($enclosure);
-        }
-
-        if ($escape !== null) {
-            $parser->setEscape($escape);
         }
 
         if ($ignoreFirstLine) {
@@ -228,15 +223,5 @@ final class ParserTest extends TestCase
         $this->expectExceptionMessage('Enclosure must be a single-byte character');
 
         $parser->setEnclosure('..');
-    }
-
-    public function testRejectsInvalidEscape(): void
-    {
-        $parser = new Parser;
-
-        $this->expectException(InvalidEscapeException::class);
-        $this->expectExceptionMessage('Escape must be a single-byte character');
-
-        $parser->setEscape('..');
     }
 }

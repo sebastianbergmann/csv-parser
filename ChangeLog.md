@@ -6,6 +6,7 @@ All notable changes are documented in this file using the [Keep a CHANGELOG](htt
 
 ### Removed
 
+* The `Parser::setEscape()` method has been removed as the underlying PHP functionality will be removed
 * This library no longer supports PHP 8.3
 
 ## [1.0.1] - 2024-07-03
