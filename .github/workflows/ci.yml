@@ -7,7 +7,7 @@ on:
 name: "CI"
 
 env:
-  COMPOSER_ROOT_VERSION: "1.0.x-dev"
+  COMPOSER_ROOT_VERSION: "2.0.x-dev"
 
 permissions:
   contents: read
@@ -43,7 +43,7 @@ jobs:
       - name: Install PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.3
+          php-version: 8.4
           coverage: none
 
       - name: Install dependencies with Composer
@@ -61,7 +61,6 @@ jobs:
       fail-fast: false
       matrix:
         php-version:
-          - "8.3"
           - "8.4"
           - "8.5"
 
@@ -107,7 +106,7 @@ jobs:
       - name: "Install PHP with extensions"
         uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.3"
+          php-version: "8.4"
           coverage: "xdebug"
 
       - name: "Install dependencies with Composer"
