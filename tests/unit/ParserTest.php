@@ -30,7 +30,7 @@ use PHPUnit\Framework\TestCase;
 final class ParserTest extends TestCase
 {
     /**
-     * @return non-empty-array<non-empty-string, array{0: array, 1: Schema, 2: non-empty-string, 3: bool, 4: ?non-empty-string, 5: ?non-empty-string, 6: ?non-empty-string}>
+     * @return non-empty-array<non-empty-string, array{0: array, 1: Schema, 2: non-empty-string, 3: bool, 4: ?non-empty-string, 5: ?non-empty-string}>
      */
     public static function provider(): array
     {
@@ -70,7 +70,6 @@ final class ParserTest extends TestCase
                 true,
                 null,
                 null,
-                null,
             ],
 
             'CSV file with header; schema for subset of fields' => [
@@ -78,7 +77,6 @@ final class ParserTest extends TestCase
                 $singleFieldSchema,
                 __DIR__ . '/../fixture/fixture_with_header.csv',
                 true,
-                null,
                 null,
                 null,
             ],
@@ -90,7 +88,6 @@ final class ParserTest extends TestCase
                 false,
                 null,
                 null,
-                null,
             ],
 
             'CSV file without header; schema for subset of fields' => [
@@ -98,7 +95,6 @@ final class ParserTest extends TestCase
                 $singleFieldSchema,
                 __DIR__ . '/../fixture/fixture_without_header.csv',
                 false,
-                null,
                 null,
                 null,
             ],
@@ -110,7 +106,6 @@ final class ParserTest extends TestCase
                 false,
                 null,
                 null,
-                null,
             ],
 
             'CSV file with enclosed values (non-default enclosure)' => [
@@ -120,7 +115,6 @@ final class ParserTest extends TestCase
                 false,
                 null,
                 '\'',
-                null,
             ],
 
             'CSV file with non-default separator' => [
@@ -129,7 +123,6 @@ final class ParserTest extends TestCase
                 __DIR__ . '/../fixture/fixture_non_default_separator.csv',
                 false,
                 ';',
-                null,
                 null,
             ],
 
@@ -162,7 +155,6 @@ final class ParserTest extends TestCase
                 false,
                 null,
                 null,
-                '"',
             ],
         ];
     }
