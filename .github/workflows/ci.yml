@@ -229,6 +229,7 @@ jobs:
           php-version: ${{ env.PHP_VERSION }}
           coverage: xdebug
           tools: none
+          ini-values: memory_limit=-1
 
       - name: Install dependencies with Composer
         run: ./tools/composer update --no-ansi --no-interaction --no-progress
