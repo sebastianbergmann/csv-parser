@@ -156,6 +156,36 @@ final class ParserTest extends TestCase
                 null,
                 null,
             ],
+
+            'CSV file with empty lines' => [
+                [
+                    [
+                        'a' => 1,
+                        'b' => 2.0,
+                        'c' => '3',
+                        'd' => true,
+                        'e' => false,
+                    ],
+                    [
+                        'a' => 4,
+                        'b' => 5.0,
+                        'c' => '6',
+                        'd' => false,
+                        'e' => true,
+                    ],
+                ],
+                Schema::from(
+                    FieldDefinition::from(1, 'a', Type::integer()),
+                    FieldDefinition::from(2, 'b', Type::float()),
+                    FieldDefinition::from(3, 'c', Type::string()),
+                    FieldDefinition::from(4, 'd', Type::boolean()),
+                    FieldDefinition::from(5, 'e', Type::boolean()),
+                ),
+                __DIR__ . '/../fixture/with_empty_lines.csv',
+                false,
+                null,
+                null,
+            ],
         ];
     }
 
