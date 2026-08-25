@@ -227,6 +227,13 @@ final class ParserTest extends TestCase
         (new Parser)->parse('does_not_exist.csv', Schema::from());
     }
 
+    public function test_Cannot_read_from_CSV_file_when_path_is_a_directory(): void
+    {
+        $this->expectException(CannotReadCsvFileException::class);
+
+        (new Parser)->parse(__DIR__, Schema::from());
+    }
+
     public function testRejectsInvalidSeparator(): void
     {
         $parser = new Parser;

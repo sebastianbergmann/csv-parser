@@ -9,11 +9,14 @@
  */
 namespace SebastianBergmann\CsvParser;
 
-use function is_array;
+use function error_get_last;
+use function fclose;
+use function fgetcsv;
+use function fopen;
+use function is_dir;
+use function sprintf;
 use function strlen;
 use Generator;
-use RuntimeException;
-use SplFileObject;
 
 /**
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise for this library
@@ -32,14 +35,21 @@ final class Parser
      */
     public function parse(string $filename, Schema $schema): Generator
     {
-        try {
-            $file = new SplFileObject($filename);
-        } catch (RuntimeException $e) {
-            throw new CannotReadCsvFileException($e->getMessage());
+        if (is_dir($filename)) {
+            throw new CannotReadCsvFileException(
+                sprintf('Cannot read "%s": Is a directory', $filename),
+            );
         }
 
-        $file->setFlags(SplFileObject::READ_CSV | SplFileObject::SKIP_EMPTY | SplFileObject::DROP_NEW_LINE);
-        $file->setCsvControl($this->separator, $this->enclosure, '');
+        $file = @fopen($filename, 'r');
+
+        if ($file === false) {
+            $error = error_get_last();
+
+            throw new CannotReadCsvFileException(
+                $error['message'] ?? sprintf('Cannot read "%s"', $filename),
+            );
+        }
 
         return $this->generator($file, $schema);
     }
@@ -74,25 +84,31 @@ final class Parser
     }
 
     /**
+     * @param resource $file
+     *
      * @return Generator<int, array<string, bool|float|int|object|string>>
      */
-    private function generator(SplFileObject $file, Schema $schema): Generator
+    private function generator($file, Schema $schema): Generator
     {
-        $firstLine = true;
+        try {
+            $firstLine = true;
 
-        foreach ($file as $line) {
-            if ($this->ignoreFirstLine && $firstLine) {
-                $firstLine = false;
+            while (($line = fgetcsv($file, null, $this->separator, $this->enclosure, '')) !== false) {
+                if ($this->ignoreFirstLine && $firstLine) {
+                    $firstLine = false;
 
-                continue;
+                    continue;
+                }
+
+                if ($line === [null]) {
+                    continue;
+                }
+
+                /** @phpstan-ignore argument.type */
+                yield $schema->apply($line);
             }
-
-            if (!is_array($line)) {
-                continue;
-            }
-
-            /** @phpstan-ignore argument.type */
-            yield $schema->apply($line);
+        } finally {
+            fclose($file);
         }
     }
 }
