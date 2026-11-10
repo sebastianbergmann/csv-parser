@@ -44,8 +44,8 @@ final class TypeTest extends TestCase
 
     public function testCanConvertStringToBoolean(): void
     {
-        $this->assertSame(true, Type::boolean()->apply('1'));
-        $this->assertSame(false, Type::boolean()->apply('0'));
+        $this->assertTrue(Type::boolean()->apply('1'));
+        $this->assertFalse(Type::boolean()->apply('0'));
     }
 
     public function testCanConvertStringToInteger(): void
