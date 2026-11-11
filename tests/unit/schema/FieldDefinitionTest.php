@@ -36,7 +36,7 @@ final class FieldDefinitionTest extends TestCase
         $record = [];
 
         $this->expectException(OutOfBoundsException::class);
-        $this->expectExceptionMessage('Input array does not have an element at position 1');
+        $this->expectExceptionMessageIs('Input array does not have an element at position 1');
 
         $this->field()->apply($line, $record);
     }

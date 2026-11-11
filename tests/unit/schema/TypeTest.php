@@ -63,7 +63,7 @@ final class TypeTest extends TestCase
     public function testCannotConvertInvalidStringToInteger(string $input, string $message): void
     {
         $this->expectException(InvalidIntegerException::class);
-        $this->expectExceptionMessage($message);
+        $this->expectExceptionMessageIs($message);
 
         Type::integer()->apply($input);
     }
