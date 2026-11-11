@@ -1,0 +1,8 @@
+services:
+    zizmor:
+        image: ghcr.io/zizmorcore/zizmor:1.25.2
+        environment:
+            GH_TOKEN: ${GH_TOKEN:-}
+        working_dir: /workspace
+        volumes:
+            - .:/workspace:ro

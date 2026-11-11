@@ -1,0 +1,302 @@
+<?php
+/**
+ * This code is licensed under the BSD 3-Clause License.
+ *
+ * Copyright (c) 2017, Maks Rafalko
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * * Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * * Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+declare(strict_types=1);
+
+namespace Infection\Testing;
+
+use function array_map;
+use function array_shift;
+use function count;
+use function explode;
+use function implode;
+use Infection\Framework\ClassName;
+use Infection\Framework\Str;
+use Infection\Mutation\Mutation;
+use Infection\Mutator\ConfigurableMutator;
+use Infection\Mutator\Mutator;
+use Infection\Mutator\NodeMutationGenerator;
+use Infection\PhpParser\Visitor\MutationCollectorVisitor;
+use Infection\TestFramework\Tracing\Trace\EmptyTrace;
+use Infection\Testing\FileSystem\MockSplFileInfo;
+use const PHP_EOL;
+use PhpParser\Node;
+use PHPUnit\Framework\TestCase;
+use function Pipeline\take;
+use Psr\Log\NullLogger;
+use function sprintf;
+use Symfony\Component\Console\Output\NullOutput;
+use Throwable;
+use function token_get_all;
+use const TOKEN_PARSE;
+use Webmozart\Assert\Assert;
+
+abstract class BaseMutatorTestCase extends TestCase
+{
+    private const string WRAPPED_CODE_METHOD_BODY_INDENT = '        ';
+
+    /** @var Mutator<Node> */
+    protected Mutator $mutator;
+
+    protected function setUp(): void
+    {
+        $this->mutator = $this->createMutator();
+    }
+
+    public static function wrapCodeInMethod(
+        string $code,
+        ?string $namespace = null,
+    ): string {
+        $namespaceDeclaration = $namespace !== null ? "namespace {$namespace};" : '';
+
+        $indentedCode = self::indentCode($code);
+
+        return <<<PHP
+            <?php
+            {$namespaceDeclaration}
+            class WrappingClass {
+                public function wrappedTestedCode() {
+            {$indentedCode}
+                }
+            }
+            PHP;
+    }
+
+    /**
+     * @param string|string[]|null $expectedCode
+     * @param mixed[] $settings
+     */
+    final protected function assertMutatesInput(
+        string $inputCode,
+        string|array|null $expectedCode = [],
+        array $settings = [],
+        bool $allowInvalidCode = false,
+    ): void {
+        $expectedCodeSamples = (array) $expectedCode;
+
+        $inputCode = Str::rTrimLines($inputCode);
+
+        if ($inputCode === $expectedCode) {
+            $this->fail('Input code cant be the same as mutated code');
+        }
+
+        $mutants = $this->mutate($inputCode, $settings);
+
+        $this->assertCount(
+            count($mutants),
+            $expectedCodeSamples,
+            sprintf(
+                'Failed asserting that the number of code samples (%d) equals the number of mutants (%d) created by the mutator. Make sure mutator is enabled and mutates the source code. Mutants are: %s',
+                count($expectedCodeSamples),
+                count($mutants),
+                Str::rTrimLines(implode(PHP_EOL, $mutants)),
+            ),
+        );
+
+        foreach ($mutants as $realMutatedCode) {
+            /** @var string|null $expectedCodeSample */
+            $expectedCodeSample = array_shift($expectedCodeSamples);
+
+            if ($expectedCodeSample === null) {
+                $this->fail('The number of expected mutated code samples must equal the number of generated Mutants by mutator.');
+            }
+
+            Assert::string($expectedCodeSample);
+
+            $this->assertSame(
+                Str::rTrimLines($expectedCodeSample),
+                Str::rTrimLines($realMutatedCode),
+            );
+
+            if (!$allowInvalidCode) {
+                $this->assertSyntaxIsValid($realMutatedCode);
+            }
+        }
+    }
+
+    /**
+     * @param mixed[] $settings
+     *
+     * @return Mutator<Node>
+     */
+    final protected function createMutator(array $settings = []): Mutator
+    {
+        /** @var class-string<ConfigurableMutator<Node>> $mutatorClassName */
+        $mutatorClassName = $this->getTestedMutatorClassName();
+
+        $mutatorsByName = SingletonContainer::getContainer()
+            ->getMutatorFactory()
+            ->create([
+                $mutatorClassName => ['settings' => $settings],
+            ], false)
+        ;
+
+        $mutator = array_shift($mutatorsByName);
+        Assert::isInstanceOf($mutator, Mutator::class);
+
+        return $mutator;
+    }
+
+    protected function getTestedMutatorClassName(): string
+    {
+        $mutatorClassName = ClassName::getCanonicalSourceClassName(static::class);
+
+        Assert::notNull(
+            $mutatorClassName,
+            sprintf(
+                'Could not find the tested mutator class name for "%s". Ensure the test case follow the Infection naming convention. The expected class name(s) was/were: "%s"',
+                static::class,
+                implode(
+                    ', ',
+                    ClassName::getCanonicalSourceClassNames(static::class),
+                ),
+            ),
+        );
+
+        return $mutatorClassName;
+    }
+
+    /**
+     * @param mixed[] $settings
+     *
+     * @return string[]
+     */
+    final protected function mutate(string $code, array $settings = []): array
+    {
+        $mutations = $this->getMutationsFromCode($code, $settings);
+
+        $mutantCodeFactory = SingletonContainer::getContainer()->getMutantCodeFactory();
+
+        $mutants = [];
+
+        foreach ($mutations as $mutation) {
+            $mutants[] = $mutantCodeFactory->createCode($mutation);
+        }
+
+        return $mutants;
+    }
+
+    private static function indentCode(string $code): string
+    {
+        return implode(
+            "\n",
+            array_map(
+                static fn (string $line) => self::WRAPPED_CODE_METHOD_BODY_INDENT . $line,
+                explode(
+                    "\n",
+                    $code,
+                ),
+            ),
+        );
+    }
+
+    /**
+     * @param mixed[] $settings
+     *
+     * @return Mutation[]
+     */
+    private function getMutationsFromCode(string $code, array $settings): array
+    {
+        $parser = SingletonContainer::getContainer()->getParser();
+        $nodes = $parser->parse($code);
+        $originalFileTokens = $parser->getTokens();
+
+        $this->assertNotNull($nodes);
+
+        $mutator = $this->createMutator($settings);
+
+        // Note that in theory we could just use the FileMutationGenerator. However,
+        // we may add more visitors/traverses in the near future, which would become
+        // impossible with FileMutationGenerator, hence we leave it as is for now.
+        $mutationsCollectorVisitor = new MutationCollectorVisitor(
+            new NodeMutationGenerator(
+                mutatorsByName: [$mutator->getName() => $mutator],
+                filePath: '/path/to/test-file.php',
+                fileNodes: $nodes,
+                originalFileTokens: $originalFileTokens,
+                originalFileContent: $code,
+            ),
+        );
+
+        $factory = SingletonContainer::getContainer()
+            ->withValues(
+                logger: new NullLogger(),
+                output: new NullOutput(),
+                withUncovered: true,
+            )
+            ->getNodeTraverserFactory()
+        ;
+
+        $sourceFile = new MockSplFileInfo(realPath: '/path/to/virtual-test-file.php');
+
+        $factory
+            ->createEnrichmentTraverser(
+                $sourceFile,
+                new EmptyTrace($sourceFile),
+            )
+            ->traverse($nodes)
+        ;
+
+        $factory
+            ->createMutationTraverser($mutationsCollectorVisitor)
+            ->traverse($nodes)
+        ;
+
+        return take($mutationsCollectorVisitor->getMutations())->toList();
+    }
+
+    private function assertSyntaxIsValid(string $realMutatedCode): void
+    {
+        try {
+            $tokens = token_get_all($realMutatedCode, TOKEN_PARSE);
+
+            $this->assertNotSame(
+                [],
+                $tokens,
+                sprintf(
+                    'Mutator %s produces invalid code: %s',
+                    $this->mutator->getName(),
+                    $realMutatedCode,
+                ),
+            );
+        } catch (Throwable $e) {
+            $this->fail(
+                sprintf(
+                    'Mutator %s produces invalid code: %s',
+                    $this->mutator->getName(),
+                    $e->getMessage(),
+                ),
+            );
+        }
+    }
+}

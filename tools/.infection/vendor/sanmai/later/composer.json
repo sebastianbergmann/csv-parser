@@ -1,0 +1,47 @@
+{
+    "name": "sanmai/later",
+    "description": "Later: deferred wrapper object",
+    "license": "Apache-2.0",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Alexey Kopytko",
+            "email": "alexey@kopytko.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.2"
+    },
+    "require-dev": {
+        "ergebnis/composer-normalize": "^2.8",
+        "friendsofphp/php-cs-fixer": "^3.35.1",
+        "infection/infection": ">=0.27.6",
+        "phan/phan": ">=2",
+        "php-coveralls/php-coveralls": "^2.0",
+        "phpstan/phpstan": ">=1.4.5",
+        "phpunit/phpunit": ">=9.5 <10",
+        "vimeo/psalm": ">=2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Later\\": "src/"
+        },
+        "files": [
+            "src/functions.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\Later\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": true
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "0.1.x-dev"
+        }
+    }
+}

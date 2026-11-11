@@ -1,0 +1,65 @@
+{
+    "name": "colinodell/json5",
+    "type": "library",
+    "description": "UTF-8 compatible JSON5 parser for PHP",
+    "keywords": [
+        "json5",
+        "json",
+        "json5_decode",
+        "json_decode"
+    ],
+    "homepage": "https://github.com/colinodell/json5",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Colin O'Dell",
+            "email": "colinodell@gmail.com",
+            "homepage": "https://www.colinodell.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.0",
+        "ext-json": "*",
+        "ext-mbstring": "*"
+    },
+    "require-dev": {
+        "mikehaertl/php-shellcommand": "^1.7.0",
+        "phpstan/phpstan": "^1.10.57",
+        "scrutinizer/ocular": "^1.9",
+        "squizlabs/php_codesniffer": "^3.8.1",
+        "symfony/finder": "^6.0|^7.0",
+        "symfony/phpunit-bridge": "^7.0.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "ColinODell\\Json5\\": "src"
+        },
+        "files": ["src/global.php"]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ColinODell\\Json5\\Test\\": "test"
+        }
+    },
+    "bin": ["bin/json5"],
+    "scripts": {
+        "test": [
+            "@phpunit",
+            "@check-style",
+            "@phpstan"
+        ],
+        "phpunit": "simple-phpunit",
+        "phpstan": "phpstan analyse",
+        "check-style": "phpcs",
+        "fix-style": "phpcbf"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "4.0-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    }
+}

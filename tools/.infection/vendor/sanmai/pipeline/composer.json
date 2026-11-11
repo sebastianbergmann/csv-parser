@@ -1,0 +1,55 @@
+{
+    "name": "sanmai/pipeline",
+    "description": "General-purpose collections pipeline",
+    "license": "Apache-2.0",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Alexey Kopytko",
+            "email": "alexey@kopytko.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.2"
+    },
+    "require-dev": {
+        "ergebnis/composer-normalize": "^2.8",
+        "esi/phpunit-coverage-check": ">2",
+        "friendsofphp/php-cs-fixer": "^3.17",
+        "infection/infection": ">=0.32.3",
+        "league/pipeline": "^0.3 || ^1.0",
+        "php-coveralls/php-coveralls": "^2.4.1",
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "^2",
+        "phpunit/phpunit": "^11 || ^12",
+        "sanmai/phpstan-rules": "^0.3.11",
+        "vimeo/psalm": ">=2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Pipeline\\": "src/"
+        },
+        "files": [
+            "src/functions.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\Pipeline\\": "tests/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true,
+            "ergebnis/composer-normalize": true,
+            "infection/extension-installer": true,
+            "phpstan/extension-installer": true
+        },
+        "sort-packages": true
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "7.x-dev"
+        }
+    }
+}

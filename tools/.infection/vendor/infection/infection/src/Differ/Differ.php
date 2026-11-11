@@ -1,0 +1,123 @@
+<?php
+/**
+ * This code is licensed under the BSD 3-Clause License.
+ *
+ * Copyright (c) 2017, Maks Rafalko
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * * Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * * Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+declare(strict_types=1);
+
+namespace Infection\Differ;
+
+use SebastianBergmann\Diff\Differ as BaseDiffer;
+use function sprintf;
+use Webmozart\Assert\Assert;
+
+/**
+ * @internal
+ * @final
+ *
+ * Builds mutation diffs through Sebastian's differ while keeping Infection's expected output shape under test.
+ */
+class Differ
+{
+    public function __construct(
+        private readonly BaseDiffer $differ,
+    ) {
+    }
+
+    /**
+     * Returns the diff between two arrays or strings as string.
+     *
+     * Originally this was overridden to show just DIFF_MAX_LINES lines of the diff,
+     * but since v3 of diff this is no longer needed, so this remains as a thin wrapper.
+     */
+    public function diff(string $from, string $to): string
+    {
+        return $this->differ->diff($from, $to);
+    }
+
+    /**
+     * Returns the diff between two pieces of code, but instead of a unified diff,
+     * it provides the relevant sections of the original and modified code.
+     * As with a unified diff, only changed lines and their surrounding context
+     * are included.
+     *
+     * @return array{string, string}
+     */
+    public function diffToArray(string $from, string $to): array
+    {
+        $tokens = $this->differ->diffToArray($from, $to);
+
+        $from = new Tokens();
+        $to = new Tokens();
+
+        foreach ($tokens as $tokenPair) {
+            self::processTokens($tokenPair, $from, $to);
+        }
+
+        return [
+            $from->getLines(),
+            $to->getLines(),
+        ];
+    }
+
+    /**
+     * @param array{string, BaseDiffer::*} $tokenPair
+     */
+    private static function processTokens(
+        array $tokenPair,
+        Tokens $from,
+        Tokens $to,
+    ): void {
+        [$token, $type] = $tokenPair;
+
+        if ($type === BaseDiffer::OLD) {
+            $from->addUnchangedToken($token);
+            $to->addUnchangedToken($token);
+        } elseif ($type === BaseDiffer::ADDED) {
+            $to->addChangedToken($token);
+        } elseif ($type === BaseDiffer::REMOVED) {
+            $from->addChangedToken($token);
+        } else {
+            Assert::oneOf(
+                $type,
+                [
+                    BaseDiffer::DIFF_LINE_END_WARNING,
+                    BaseDiffer::NO_LINE_END_EOF_WARNING,
+                ],
+                sprintf(
+                    'Unknown token type "%s" for the token "%s".',
+                    $type,
+                    $token,
+                ),
+            );
+        }
+    }
+}

@@ -1,0 +1,36 @@
+name: CI
+
+on: [ push, pull_request ]
+
+jobs:
+  run:
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      matrix:
+        operating-system: [ ubuntu-latest ]
+        php-versions: [ '8.0', '8.1', '8.2' ]
+    name: PHP ${{ matrix.php-versions }} Test on ${{ matrix.operating-system }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: ast
+          coverage: pcov
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate
+
+      - name: Install dependencies
+        run: COMPOSER_ROOT_VERSION=0.2.5 composer install --prefer-dist --no-progress
+
+      - name: Run analyse for PHP 8.0
+        if: matrix.php-versions == '8.0'
+        run: make ci-analyze --keep-going
+
+      - name: Run tests
+        run: make ci-test --keep-going

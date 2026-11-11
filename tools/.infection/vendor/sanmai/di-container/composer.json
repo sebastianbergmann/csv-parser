@@ -1,0 +1,67 @@
+{
+    "name": "sanmai/di-container",
+    "description": "dependency injection container with automatic constructor dependency resolution",
+    "license": "BSD-3-Clause",
+    "type": "library",
+    "keywords": [
+        "di container",
+        "psr 11",
+        "autowiring",
+        "constructor di"
+    ],
+    "authors": [
+        {
+            "name": "Alexey Kopytko",
+            "email": "alexey@kopytko.com",
+            "homepage": "https://github.com/sanmai"
+        },
+        {
+            "name": "Maks Rafalko",
+            "homepage": "https://twitter.com/maks_rafalko"
+        },
+        {
+            "name": "Théo FIDRY",
+            "homepage": "https://twitter.com/tfidry"
+        }
+    ],
+    "require": {
+        "php": ">=8.2",
+        "psr/container": "^1.1.2 || ^2.0",
+        "sanmai/pipeline": "^7.10"
+    },
+    "require-dev": {
+        "ergebnis/composer-normalize": "^2.8",
+        "friendsofphp/php-cs-fixer": "^3.17",
+        "infection/infection": ">=0.31",
+        "php-coveralls/php-coveralls": "^2.4.1",
+        "phpbench/phpbench": "^1.4",
+        "phpstan/extension-installer": "^1.4",
+        "phpunit/phpunit": "^11.5.25",
+        "sanmai/phpstan-rules": "^0.3.10"
+    },
+    "autoload": {
+        "psr-4": {
+            "DIContainer\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Benchmarks\\DIContainer\\": "benchmarks/",
+            "Tests\\DIContainer\\": "tests/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "ergebnis/composer-normalize": true,
+            "infection/extension-installer": true,
+            "phpstan/extension-installer": true
+        },
+        "optimize-autoloader": true
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "0.1.x-dev"
+        },
+        "preferred-install": "dist"
+    }
+}

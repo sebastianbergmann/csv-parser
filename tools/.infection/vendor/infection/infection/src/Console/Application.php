@@ -1,0 +1,182 @@
+<?php
+/**
+ * This code is licensed under the BSD 3-Clause License.
+ *
+ * Copyright (c) 2017, Maks Rafalko
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * * Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * * Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+declare(strict_types=1);
+
+namespace Infection\Console;
+
+use function array_merge;
+use Infection\Command\ConfigureCommand;
+use Infection\Command\Debug\DumpAstCommand;
+use Infection\Command\Debug\MockTeamCityCommand;
+use Infection\Command\DescribeCommand;
+use Infection\Command\Git\GitBaseReferenceCommand;
+use Infection\Command\Git\GitChangedFilesCommand;
+use Infection\Command\Git\GitChangedLinesCommand;
+use Infection\Command\Git\GitDefaultBaseCommand;
+use Infection\Command\InitialTest\InitialTestRunCommand;
+use Infection\Command\ListSourcesCommand;
+use Infection\Command\MakeCustomMutatorCommand;
+use Infection\Command\RunCommand;
+use Infection\Container\Container;
+use Infection\Framework\InfectionVersion;
+use OutOfBoundsException;
+use Override;
+use function sprintf;
+use Symfony\Component\Console\Application as BaseApplication;
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\StringInput;
+use Symfony\Component\Console\Output\OutputInterface;
+use function trim;
+
+/**
+ * @internal
+ */
+final class Application extends BaseApplication
+{
+    private const string NAME = 'Infection - PHP Mutation Testing Framework';
+
+    private const string LOGO = '
+    ____      ____          __  _
+   /  _/___  / __/__  _____/ /_(_)___  ____
+   / // __ \/ /_/ _ \/ ___/ __/ / __ \/ __ \
+ _/ // / / / __/  __/ /__/ /_/ / /_/ / / / /
+/___/_/ /_/_/  \___/\___/\__/_/\____/_/ /_/
+
+<fg=blue>#StandWith</><fg=yellow>Ukraine</>
+
+';
+
+    /**
+     * @throws OutOfBoundsException
+     */
+    public function __construct(
+        private readonly Container $container,
+        InfectionVersion $infectionVersion = new InfectionVersion(),
+    ) {
+        parent::__construct(self::NAME, $infectionVersion->prettyVersion());
+        $this->setDefaultCommand('run');
+    }
+
+    #[Override]
+    public function run(?InputInterface $input = null, ?OutputInterface $output = null): int
+    {
+        $input ??= new ArgvInput();
+
+        // This allows to run `infection tests/` instead of `infection run tests/`.
+        if ($this->isUnknownCommand($input)) {
+            $input = $this->defaultToRunCommand($input);
+        }
+
+        return parent::run($input, $output);
+    }
+
+    public function getContainer(): Container
+    {
+        return $this->container;
+    }
+
+    #[Override]
+    public function getLongVersion(): string
+    {
+        return trim(sprintf(
+            '<info>%s</info> version <comment>%s</comment>',
+            $this->getName(),
+            $this->getVersion(),
+        ));
+    }
+
+    #[Override]
+    public function getHelp(): string
+    {
+        return self::LOGO . parent::getHelp();
+    }
+
+    #[Override]
+    protected function getDefaultCommands(): array
+    {
+        $fileSystem = Container::create()->getFileSystem();
+
+        return array_merge(
+            parent::getDefaultCommands(),
+            [
+                new ConfigureCommand($fileSystem),
+                new MockTeamCityCommand($fileSystem),
+                new DumpAstCommand($fileSystem),
+                new GitBaseReferenceCommand(),
+                new GitChangedFilesCommand(),
+                new GitChangedLinesCommand(),
+                new GitDefaultBaseCommand(),
+                new RunCommand(),
+                new DescribeCommand(),
+                new ListSourcesCommand(),
+                new MakeCustomMutatorCommand(),
+                new InitialTestRunCommand(),
+            ],
+        );
+    }
+
+    #[Override]
+    protected function configureIO(InputInterface $input, OutputInterface $output): void
+    {
+        parent::configureIO($input, $output);
+
+        if ($this->getContainer()->getCiDetector()->isCiDetected()) {
+            $input->setInteractive(false);
+        }
+
+        OutputFormatterStyleConfigurator::configure($output);
+    }
+
+    private function isUnknownCommand(InputInterface $input): bool
+    {
+        $firstArgument = $input->getFirstArgument();
+
+        return $firstArgument !== null && !$this->has($firstArgument);
+    }
+
+    private function defaultToRunCommand(InputInterface $input): InputInterface
+    {
+        $newInput = new StringInput('run ' . $input);
+
+        // preserve interactivity that was set programmatically on the input
+        // rather than through a flag (e.g. when the input is built by tests).
+        // Flag- and CI-based interactivity is handled by `configureIO()`.
+        if (!$input->isInteractive()) {
+            $newInput->setInteractive(false);
+        }
+
+        return $newInput;
+    }
+}

@@ -1,0 +1,192 @@
+<?php
+/**
+ * This code is licensed under the BSD 3-Clause License.
+ *
+ * Copyright (c) 2017, Maks Rafalko
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * * Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * * Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+declare(strict_types=1);
+
+namespace Infection\TestFramework\PhpUnit\Config\Builder;
+
+use Infection\TestFramework\PhpUnit\Adapter\PhpUnitAdapter;
+use Infection\TestFramework\PhpUnit\Config\InvalidPhpUnitConfiguration;
+use Infection\TestFramework\PhpUnit\Config\XmlConfigurationManipulator;
+use Infection\TestFramework\PhpUnit\Config\XmlConfigurationVersionProvider;
+use Infection\TestFramework\XML\SafeDOMXPath;
+use function sprintf;
+use Symfony\Component\Filesystem\Filesystem;
+use function version_compare;
+use Webmozart\Assert\Assert;
+
+/**
+ * @internal
+ */
+final readonly class InitialConfigBuilder
+{
+    private string $originalXmlConfigContent;
+
+    /**
+     * @param string[] $srcDirs
+     * @param string[] $filteredSourceFilesToMutate
+     */
+    public function __construct(
+        private string $tmpDir,
+        string $originalXmlConfigContent,
+        private XmlConfigurationManipulator $configManipulator,
+        private XmlConfigurationVersionProvider $versionProvider,
+        private Filesystem $filesystem,
+        private array $srcDirs,
+        private array $filteredSourceFilesToMutate,
+    ) {
+        Assert::notEmpty(
+            $originalXmlConfigContent,
+            'The original XML config content cannot be an empty string',
+        );
+        $this->originalXmlConfigContent = $originalXmlConfigContent;
+    }
+
+    /**
+     * @throws InvalidPhpUnitConfiguration
+     */
+    public function build(string $version): string
+    {
+        $path = $this->buildPath();
+
+        $xPath = SafeDOMXPath::fromString(
+            $this->originalXmlConfigContent,
+            preserveWhiteSpace: false,
+            formatOutput: true,
+        );
+
+        $this->configManipulator->validate(
+            $version,
+            $path,
+            $xPath,
+        );
+
+        $this->addCoverageNodes($version, $xPath);
+        $this->addRandomTestsOrderAttributesIfNotSet($version, $xPath);
+        $this->configManipulator->addFailOnAttributesIfNotSet($version, $xPath);
+        $this->configManipulator->replaceWithAbsolutePaths($xPath);
+        $this->configManipulator->setStopOnFailureOrDefect($version, $xPath);
+        $this->configManipulator->deactivateColours($xPath);
+        $this->configManipulator->deactivateResultCaching($version, $xPath);
+        $this->configManipulator->deactivateStderrRedirection($xPath);
+        $this->configManipulator->removeExistingLoggers($xPath);
+        $this->configManipulator->removeExistingPrinters($xPath);
+
+        $this->filesystem->dumpFile(
+            $path,
+            $xPath->document->saveXML(),
+        );
+
+        return $path;
+    }
+
+    private function buildPath(): string
+    {
+        return $this->tmpDir . '/phpunitConfiguration.initial.infection.xml';
+    }
+
+    private function addCoverageNodes(string $version, SafeDOMXPath $xPath): void
+    {
+        if (version_compare($version, '12.0', '>=')) {
+            // For PHPUnit 12.0+, preserve the original coverage configuration as-is.
+            // Otherwise, if the initial tests executed cover code that is outside
+            // configured sources, PHPUnit will fail with a warning.
+            // Historically, this was done for performance reasons, but since then
+            // PHPUnit coverage was reworked and optimised, and there are no more
+            // benefits to doing this.
+            $this->configManipulator->addOrUpdateSourceIncludeNodes(
+                xPath: $xPath,
+                srcDirs: $this->srcDirs,
+                filteredSourceFilesToMutate: [],
+            );
+
+            return;
+        }
+
+        if (version_compare($version, '10.1', '>=')) {
+            $this->configManipulator->addOrUpdateSourceIncludeNodes($xPath, $this->srcDirs, $this->filteredSourceFilesToMutate);
+
+            return;
+        }
+
+        if (version_compare($version, '10', '>=')) {
+            $this->configManipulator->addOrUpdateCoverageIncludeNodes($xPath, $this->srcDirs, $this->filteredSourceFilesToMutate);
+
+            return;
+        }
+
+        if (version_compare($version, '9.3', '<')) {
+            $this->configManipulator->addOrUpdateLegacyCoverageWhitelistNodes($xPath, $this->srcDirs, $this->filteredSourceFilesToMutate);
+
+            return;
+        }
+
+        // For versions between 9.3 and 10.0, fallback to version provider
+        if (version_compare($this->versionProvider->provide($xPath), '9.3', '>=')) {
+            $this->configManipulator->addOrUpdateCoverageIncludeNodes($xPath, $this->srcDirs, $this->filteredSourceFilesToMutate);
+
+            return;
+        }
+
+        $this->configManipulator->addOrUpdateLegacyCoverageWhitelistNodes($xPath, $this->srcDirs, $this->filteredSourceFilesToMutate);
+    }
+
+    private function addRandomTestsOrderAttributesIfNotSet(string $version, SafeDOMXPath $xPath): void
+    {
+        if (PhpUnitAdapter::supportsExecutionOrderDefectsRandom($version)) {
+            if ($this->addAttributeIfNotSet('executionOrder', 'defects,random', $xPath)) {
+                $this->addAttributeIfNotSet('resolveDependencies', 'true', $xPath);
+            }
+        } elseif (version_compare($version, '7.2', '>=')) {
+            if ($this->addAttributeIfNotSet('executionOrder', 'random', $xPath)) {
+                $this->addAttributeIfNotSet('resolveDependencies', 'true', $xPath);
+            }
+        }
+    }
+
+    private function addAttributeIfNotSet(string $attribute, string $value, SafeDOMXPath $xPath): bool
+    {
+        $count = $xPath->queryCount(sprintf('/phpunit/@%s', $attribute));
+
+        if ($count === 0) {
+            $xPath
+                ->getElement('/phpunit')
+                ->setAttribute($attribute, $value)
+            ;
+
+            return true;
+        }
+
+        return false;
+    }
+}

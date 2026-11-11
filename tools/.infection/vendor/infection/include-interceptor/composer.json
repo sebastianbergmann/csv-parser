@@ -1,0 +1,38 @@
+{
+    "name": "infection/include-interceptor",
+    "type": "library",
+    "description": "Stream Wrapper: Include Interceptor. Allows to replace included (autoloaded) file with another one.",
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Maks Rafalko",
+            "email": "maks.rafalko@gmail.com"
+        }
+    ],
+    "require": {},
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^2.16",
+        "infection/infection": "^0.19.0",
+        "phan/phan": "^2.4 || ^3",
+        "php-coveralls/php-coveralls": "^2.2",
+        "phpstan/phpstan": "^0.12.8",
+        "phpunit/phpunit": "^8.5",
+        "vimeo/psalm": "^3.8"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "infection/extension-installer": true
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Infection\\StreamWrapper\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Infection\\Tests\\StreamWrapper\\": "tests/"
+        }
+    }
+}

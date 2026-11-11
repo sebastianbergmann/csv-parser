@@ -1,0 +1,47 @@
+{
+    "name": "infection/extension-installer",
+    "description": "Infection Extension Installer",
+    "type": "composer-plugin",
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Maks Rafalko",
+            "email": "maks.rafalko@gmail.com"
+        }
+    ],
+    "extra": {
+        "class": "Infection\\ExtensionInstaller\\Plugin"
+    },
+    "autoload": {
+        "psr-4": {
+            "Infection\\ExtensionInstaller\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Infection\\ExtensionInstaller\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "platform": {
+            "php": "7.4"
+        },
+        "sort-packages": true
+    },
+    "require": {
+        "composer-plugin-api": "^1.1 || ^2.0"
+    },
+    "require-dev": {
+        "composer/composer": "^1.9 || ^2.0",
+        "friendsofphp/php-cs-fixer": "^2.18, <2.19",
+        "infection/infection": "^0.15.2",
+        "php-coveralls/php-coveralls": "^2.4",
+        "phpstan/extension-installer": "^1.0",
+        "phpstan/phpstan": "^0.12.10",
+        "phpstan/phpstan-phpunit": "^0.12.6",
+        "phpstan/phpstan-strict-rules": "^0.12.2",
+        "phpstan/phpstan-webmozart-assert": "^0.12.2",
+        "phpunit/phpunit": "^9.5",
+        "vimeo/psalm": "^4.8"
+    }
+}

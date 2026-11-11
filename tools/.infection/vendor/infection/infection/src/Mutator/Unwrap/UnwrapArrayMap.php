@@ -1,0 +1,94 @@
+<?php
+/**
+ * This code is licensed under the BSD 3-Clause License.
+ *
+ * Copyright (c) 2017, Maks Rafalko
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * * Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * * Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+declare(strict_types=1);
+
+namespace Infection\Mutator\Unwrap;
+
+use function count;
+use Infection\Mutator\Definition;
+use Infection\Mutator\MutatorCategory;
+use Override;
+use PhpParser\Node;
+use function range;
+
+/**
+ * @internal
+ */
+final class UnwrapArrayMap extends AbstractFunctionUnwrapMutator
+{
+    public static function getDefinition(): Definition
+    {
+        return new Definition(
+            <<<'TXT'
+                Replaces an `array_map` function call with its array operand. For example:
+
+                ```php
+                $x = array_map($callback, ['foo', 'bar', 'baz']);
+                ```
+
+                Will be mutated to:
+
+                ```php
+                $x = ['foo', 'bar', 'baz'];
+                ```
+                TXT,
+            MutatorCategory::SEMANTIC_REDUCTION,
+            <<<'TXT'
+                    This mutation escaping suggests that the `$callback` transformation passed to
+                    `array_map()` does no effect to the passed elements.
+
+                    Either this transformation is needed in which case additional tests capturing
+                    this need are required, or it is not and should be removed.
+                TXT,
+            <<<'DIFF'
+                - $x = array_map($callback, ['foo', 'bar', 'baz']);
+                + $x = ['foo', 'bar', 'baz'];
+                DIFF,
+        );
+    }
+
+    protected function getFunctionName(): string
+    {
+        return 'array_map';
+    }
+
+    /**
+     * @psalm-mutation-free
+     */
+    #[Override]
+    protected function getParameterIndexes(Node\Expr\FuncCall $node): iterable
+    {
+        yield from range(1, count($node->args) - 1);
+    }
+}

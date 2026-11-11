@@ -1,0 +1,8 @@
+/composer.lock export-ignore
+/phpunit.xml export-ignore
+/.gitignore export-ignore
+/.github export-ignore
+/Makefile export-ignore
+/docs export-ignore
+/.php-cs-fixer.php export-ignore
+/tools export-ignore
