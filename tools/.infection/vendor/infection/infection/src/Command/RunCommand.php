@@ -130,6 +130,8 @@ final class RunCommand extends BaseCommand
 
     private const string OPTION_LOGGER_TEXT = 'logger-text';
 
+    private const string OPTION_LOGGER_JSON = 'logger-json';
+
     private const string OPTION_USE_NOOP_MUTATORS = 'noop';
 
     private const string OPTION_EXECUTE_ONLY_COVERING_TEST_CASES = 'only-covering-test-cases';
@@ -254,9 +256,9 @@ final class RunCommand extends BaseCommand
             ->addOption(
                 self::OPTION_MUTANT_ID,
                 null,
-                InputOption::VALUE_REQUIRED,
-                'Run only one Mutant by its ID. Can be used multiple times. If source code is changed, can be invalidated. Pass all previous options with this one.',
-                Container::DEFAULT_MUTANT_ID,
+                InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
+                'Run only one Mutant by its ID. Repeat the option to run several Mutants. If source code is changed, can be invalidated. Pass all previous options with this one.',
+                Container::DEFAULT_MUTANT_IDS,
             )
         ;
 
@@ -284,6 +286,12 @@ final class RunCommand extends BaseCommand
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Path to text report file.',
+            )
+            ->addOption(
+                self::OPTION_LOGGER_JSON,
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Path to JSON report file, with all mutants, source and mutated code, and test framework output.',
             )
             ->addOption(
                 self::OPTION_LOGGER_SUMMARY_JSON,
@@ -490,12 +498,13 @@ final class RunCommand extends BaseCommand
             htmlLogFilePath: $commandHelper->getStringOption(self::OPTION_LOGGER_HTML, Container::DEFAULT_HTML_LOGGER_PATH),
             textLogFilePath: $commandHelper->getStringOption(self::OPTION_LOGGER_TEXT, Container::DEFAULT_TEXT_LOGGER_PATH),
             summaryJsonLogFilePath: $commandHelper->getStringOption(self::OPTION_LOGGER_SUMMARY_JSON, Container::DEFAULT_SUMMARY_JSON_LOGGER_PATH),
+            jsonLogFilePath: $commandHelper->getStringOption(self::OPTION_LOGGER_JSON, Container::DEFAULT_JSON_LOGGER_PATH),
             useNoopMutators: (bool) $input->getOption(self::OPTION_USE_NOOP_MUTATORS),
             executeOnlyCoveringTestCases: (bool) $input->getOption(self::OPTION_EXECUTE_ONLY_COVERING_TEST_CASES),
             mapSourceClassToTestStrategy: MapSourceClassToTestOption::get($io),
             projectDirectory: $this->getProjectDirectory($io),
             staticAnalysisTool: $commandHelper->getStringOption(self::OPTION_STATIC_ANALYSIS_TOOL, Container::DEFAULT_STATIC_ANALYSIS_TOOL),
-            mutantId: $commandHelper->getStringOption(self::OPTION_MUTANT_ID, Container::DEFAULT_MUTANT_ID),
+            mutantIds: $commandHelper->getStringListOption(self::OPTION_MUTANT_ID),
         );
     }
 
