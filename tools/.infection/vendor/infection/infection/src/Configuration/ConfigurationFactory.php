@@ -109,6 +109,7 @@ class ConfigurationFactory
      * @param non-empty-string|null $projectDirectory Absolute path.
      * @param positive-int|'auto'|'max'|null $threadCount
      * @param positive-int|'max'|null $dotsPerRow
+     * @param list<non-empty-string> $mutantIds
      *
      * @throws FileOrDirectoryNotFound
      * @throws NoSourceFound
@@ -143,12 +144,13 @@ class ConfigurationFactory
         ?string $htmlLogFilePath,
         ?string $textLogFilePath,
         ?string $summaryJsonLogFilePath,
+        ?string $jsonLogFilePath,
         bool $useNoopMutators,
         bool $executeOnlyCoveringTestCases,
         ?string $mapSourceClassToTestStrategy,
         ?string $projectDirectory,
         ?string $staticAnalysisTool,
-        ?string $mutantId,
+        array $mutantIds,
     ): Configuration {
         $configDir = dirname($schema->pathname);
 
@@ -182,7 +184,7 @@ class ConfigurationFactory
             processTimeout: $schema->timeout ?? self::DEFAULT_TIMEOUT,
             source: $schema->source,
             sourceFilter: $sourceFilter,
-            logs: $this->retrieveLogs($schema->logs, $configDir, $useGitHubLogger, $gitlabLogFilePath, $htmlLogFilePath, $textLogFilePath, $summaryJsonLogFilePath),
+            logs: $this->retrieveLogs($schema->logs, $configDir, $useGitHubLogger, $gitlabLogFilePath, $htmlLogFilePath, $textLogFilePath, $summaryJsonLogFilePath, $jsonLogFilePath),
             logVerbosity: $logVerbosity,
             tmpDir: $namespacedTmpDir,
             phpUnit: $this->retrievePhpUnit($schema, $configDir),
@@ -220,7 +222,7 @@ class ConfigurationFactory
             mapSourceClassToTestStrategy: $mapSourceClassToTestStrategy,
             projectDirectory: $this->retrieveProjectDirectory($projectDirectory),
             staticAnalysisTool: $resultStaticAnalysisTool,
-            mutantId: $mutantId,
+            mutantIds: $mutantIds,
             configurationPathname: $schema->pathname,
             debugTestFrameworkLogFile: self::retrieveDebugTestFrameworkLogFile(
                 $schema->debugTestFrameworkLogFile,
@@ -480,7 +482,7 @@ class ConfigurationFactory
         return [$sourceFilter, $testFrameworkExtraArgs];
     }
 
-    private function retrieveLogs(Logs $logs, string $configDir, ?bool $useGitHubLogger, ?string $gitlabLogFilePath, ?string $htmlLogFilePath, ?string $textLogFilePath, ?string $summaryJsonLogFilePath): Logs
+    private function retrieveLogs(Logs $logs, string $configDir, ?bool $useGitHubLogger, ?string $gitlabLogFilePath, ?string $htmlLogFilePath, ?string $textLogFilePath, ?string $summaryJsonLogFilePath, ?string $jsonLogFilePath): Logs
     {
         $useGitHubLogger ??= $this->detectCiGithubActions();
 
@@ -502,6 +504,10 @@ class ConfigurationFactory
 
         if ($summaryJsonLogFilePath !== null) {
             $logs->setSummaryJsonLogFilePath($summaryJsonLogFilePath);
+        }
+
+        if ($jsonLogFilePath !== null) {
+            $logs->setJsonLogFilePath($jsonLogFilePath);
         }
 
         return new Logs(
