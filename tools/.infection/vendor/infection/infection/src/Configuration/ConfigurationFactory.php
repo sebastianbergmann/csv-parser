@@ -53,8 +53,8 @@ use Infection\Configuration\Schema\SchemaConfiguration;
 use Infection\Configuration\SourceFilter\GitDiffFilter;
 use Infection\Configuration\SourceFilter\IncompleteGitDiffFilter;
 use Infection\Configuration\SourceFilter\PlainFilter;
-use Infection\Configuration\SourceFilter\PositionalPathsFilter;
-use Infection\Configuration\SourceFilter\SourceFileFilter;
+use Infection\Configuration\SourceFilter\PositionalArgumentsFilter;
+use Infection\Configuration\SourceFilter\SourceFilter;
 use Infection\FileSystem\FileSystem;
 use Infection\FileSystem\Locator\FileOrDirectoryNotFound;
 use Infection\FileSystem\TmpDirProvider;
@@ -100,7 +100,7 @@ class ConfigurationFactory
         private readonly Git $git,
         private readonly ProjectDirectoryProvider $projectDirectoryProvider,
         private readonly CpuCoresCountProvider $cpuCoresCountProvider,
-        private readonly PositionalPathsClassifier $positionalPathsClassifier,
+        private readonly PositionalArgumentsClassifier $positionalArgumentsClassifier,
         private readonly FileSystem $fileSystem,
     ) {
     }
@@ -135,7 +135,7 @@ class ConfigurationFactory
         ?string $testFrameworkExtraOptions,
         ?string $testFrameworkExtraArgs,
         ?string $staticAnalysisToolOptions,
-        PlainFilter|IncompleteGitDiffFilter|PositionalPathsFilter|null $sourceFilter,
+        PlainFilter|IncompleteGitDiffFilter|PositionalArgumentsFilter|null $sourceFilter,
         int|string|null $threadCount,
         string|int|null $dotsPerRow,
         bool $dryRun,
@@ -174,16 +174,22 @@ class ConfigurationFactory
         $mutators = $this->mutatorFactory->create($resolvedMutatorsArray, $useNoopMutators);
         $ignoreSourceCodeMutatorsMap = $this->retrieveIgnoreSourceCodeMutatorsMap($resolvedMutatorsArray);
 
-        [$sourceFilter, $testFrameworkExtraArgs] = $this->refineFilterIfNecessary(
+        $source = ResolvedSource::create(
+            $schema->source,
+            $configDir,
+        );
+
+        [$sourceFilter, $testFrameworkExtraArgs, $classifiedPositionalArguments] = $this->refineFilterIfNecessary(
             $sourceFilter,
-            $schema,
+            $source,
             $testFrameworkExtraArgs,
         );
 
         return new Configuration(
             processTimeout: $schema->timeout ?? self::DEFAULT_TIMEOUT,
-            source: $schema->source,
+            source: $source,
             sourceFilter: $sourceFilter,
+            classifiedPositionalArguments: $classifiedPositionalArguments,
             logs: $this->retrieveLogs($schema->logs, $configDir, $useGitHubLogger, $gitlabLogFilePath, $htmlLogFilePath, $textLogFilePath, $summaryJsonLogFilePath, $jsonLogFilePath),
             logVerbosity: $logVerbosity,
             tmpDir: $namespacedTmpDir,
@@ -428,21 +434,19 @@ class ConfigurationFactory
     }
 
     /**
-     * @return array{0: PlainFilter|null, 1: string|null}
+     * @return array{0: PlainFilter|null, 1: string|null, 2: ClassifiedPositionalArguments}
      */
-    private function resolvePositionalPathsFilter(
-        PositionalPathsFilter $sourceFilter,
-        SchemaConfiguration $schema,
+    private function resolvePositionalArgumentsFilter(
+        PositionalArgumentsFilter $sourceFilter,
+        ResolvedSource $source,
         ?string $testFrameworkExtraArgs,
     ): array {
-        $classified = $this->positionalPathsClassifier->classify(
-            $sourceFilter->paths,
-            $schema,
+        $classified = $this->positionalArgumentsClassifier->classify(
+            $sourceFilter->arguments,
+            $source,
         );
 
-        $resolvedFilter = $classified->sourcePaths !== []
-            ? new PlainFilter(array_values(array_unique($classified->sourcePaths)))
-            : null;
+        $resolvedFilter = PlainFilter::tryToCreate($classified->sourcePaths);
 
         if ($classified->testPaths !== []) {
             Assert::null(
@@ -453,21 +457,27 @@ class ConfigurationFactory
             $testFrameworkExtraArgs = implode(' ', $classified->testPaths);
         }
 
-        return [$resolvedFilter, $testFrameworkExtraArgs];
+        return [
+            $resolvedFilter,
+            $testFrameworkExtraArgs,
+            $classified,
+        ];
     }
 
     /**
-     * @return array{0: SourceFileFilter|null, 1: string|null}
+     * @return array{0: SourceFilter, 1: string|null, 2: ClassifiedPositionalArguments}
      */
     private function refineFilterIfNecessary(
-        PlainFilter|IncompleteGitDiffFilter|PositionalPathsFilter|null $sourceFilter,
-        SchemaConfiguration $schema,
+        PlainFilter|IncompleteGitDiffFilter|PositionalArgumentsFilter|null $sourceFilter,
+        ResolvedSource $source,
         ?string $testFrameworkExtraArgs,
     ): array {
-        if ($sourceFilter instanceof PositionalPathsFilter) {
-            [$sourceFilter, $testFrameworkExtraArgs] = $this->resolvePositionalPathsFilter(
+        $classified = new ClassifiedPositionalArguments([], [], []);
+
+        if ($sourceFilter instanceof PositionalArgumentsFilter) {
+            [$sourceFilter, $testFrameworkExtraArgs, $classified] = $this->resolvePositionalArgumentsFilter(
                 $sourceFilter,
-                $schema,
+                $source,
                 $testFrameworkExtraArgs,
             );
         }
@@ -479,7 +489,11 @@ class ConfigurationFactory
             );
         }
 
-        return [$sourceFilter, $testFrameworkExtraArgs];
+        return [
+            new SourceFilter($sourceFilter, $classified->sourceSelectors),
+            $testFrameworkExtraArgs,
+            $classified,
+        ];
     }
 
     private function retrieveLogs(Logs $logs, string $configDir, ?bool $useGitHubLogger, ?string $gitlabLogFilePath, ?string $htmlLogFilePath, ?string $textLogFilePath, ?string $summaryJsonLogFilePath, ?string $jsonLogFilePath): Logs

@@ -35,10 +35,9 @@ declare(strict_types=1);
 
 namespace Infection\Configuration;
 
-use function class_exists;
+use function array_map;
 use function ctype_upper;
-use function dirname;
-use Infection\Configuration\Schema\SchemaConfiguration;
+use Infection\Configuration\SourceSymbol\SourceSymbolSelectorParser;
 use Infection\FileSystem\FileSystem;
 use function sprintf;
 use function str_contains;
@@ -48,12 +47,12 @@ use Symfony\Component\Filesystem\Path;
 use Webmozart\Assert\Assert;
 
 /**
- * Classifies positional `path` arguments into source-filter and
- * test-framework-extra-args buckets.
+ * Classifies positional arguments into source paths, test paths, and source
+ * symbol selectors.
  *
  * @internal
  */
-final readonly class PositionalPathsClassifier
+final readonly class PositionalArgumentsClassifier
 {
     private const string KIND_SOURCE = 'source';
 
@@ -61,6 +60,7 @@ final readonly class PositionalPathsClassifier
 
     public function __construct(
         private FileSystem $fileSystem,
+        private SourceSymbolSelectorParser $sourceSymbolSelectorParser,
     ) {
     }
 
@@ -69,20 +69,45 @@ final readonly class PositionalPathsClassifier
      */
     public function classify(
         array $paths,
-        SchemaConfiguration $schema,
-    ): ClassifiedPaths {
+        ResolvedSource $source,
+    ): ClassifiedPositionalArguments {
         if ($paths === []) {
-            return new ClassifiedPaths([], []);
+            return new ClassifiedPositionalArguments([], [], []);
         }
 
-        $configDir = dirname($schema->pathname);
-        $absoluteSourceDirs = self::resolveAbsoluteSourceDirectories($schema, $configDir);
+        $absoluteSourceDirs = array_map(
+            Path::canonicalize(...),
+            $source->directories,
+        );
 
         $sourcePaths = [];
         $testPaths = [];
+        $sourceSelectors = [];
 
         foreach ($paths as $path) {
-            $kind = $this->classifyPathKind($path, $absoluteSourceDirs, $configDir);
+            $absolutePath = Path::isAbsolute($path)
+                ? $path
+                : Path::join($source->basePath, $path);
+            $isExplicitPath = str_ends_with($path, '/');
+
+            // Existing files and directories take precedence over symbol selectors, so Windows
+            // paths such as C:\project\src\Foo.php are not confused with source symbols.
+            if (!$isExplicitPath && !$this->isValidPath($absolutePath)) {
+                $selector = $this->sourceSymbolSelectorParser->parse($path);
+
+                if ($selector !== null) {
+                    $sourceSelectors[] = $selector;
+
+                    // Use bare names as both files/paths and short class names.
+                    if (self::isBareClassName($path)) {
+                        $sourcePaths[] = $path;
+                    }
+
+                    continue;
+                }
+            }
+
+            $kind = $this->classifyPathKind($path, $absoluteSourceDirs, $source->basePath);
 
             if ($kind === self::KIND_SOURCE) {
                 $sourcePaths[] = $path;
@@ -91,33 +116,15 @@ final readonly class PositionalPathsClassifier
             }
         }
 
-        return new ClassifiedPaths($sourcePaths, $testPaths);
+        return new ClassifiedPositionalArguments(
+            $sourcePaths,
+            $testPaths,
+            $sourceSelectors,
+        );
     }
 
     /**
-     * @return list<non-empty-string>
-     */
-    private static function resolveAbsoluteSourceDirectories(
-        SchemaConfiguration $schema,
-        string $configDir,
-    ): array {
-        $absolute = [];
-
-        foreach ($schema->source->directories as $directory) {
-            $canonical = Path::isAbsolute($directory)
-                ? Path::canonicalize($directory)
-                : Path::join($configDir, $directory);
-
-            if ($canonical !== '') {
-                $absolute[] = $canonical;
-            }
-        }
-
-        return $absolute;
-    }
-
-    /**
-     * @param list<non-empty-string> $absoluteSourceDirs
+     * @param list<string> $absoluteSourceDirs
      */
     private static function isInsideSourceDirectories(
         string $path,
@@ -139,7 +146,7 @@ final readonly class PositionalPathsClassifier
     }
 
     /**
-     * @param list<non-empty-string> $absoluteSourceDirs
+     * @param list<string> $absoluteSourceDirs
      *
      * @return self::KIND_SOURCE|self::KIND_TEST
      */
@@ -148,16 +155,6 @@ final readonly class PositionalPathsClassifier
         array $absoluteSourceDirs,
         string $configDir,
     ): string {
-        // TODO: FQCN-style arguments (e.g. "\App\Foo" or "\App\Foo::method::45") will
-        // be supported via https://github.com/infection/infection/issues/2237
-        Assert::false(
-            self::looksLikeFqcnWithOptionalMethodOrLine($path),
-            sprintf(
-                'FQCN-style arguments like "%s" are not yet supported. See https://github.com/infection/infection/issues/2237.',
-                $path,
-            ),
-        );
-
         $absolutePath = Path::isAbsolute($path)
             ? $path
             : Path::join($configDir, $path);
@@ -175,7 +172,7 @@ final readonly class PositionalPathsClassifier
         Assert::true(
             self::looksLikePathFilter($path),
             sprintf(
-                'Invalid path argument "%s": multiple paths must be passed as separate arguments.',
+                'Invalid positional argument "%s": expected a readable file or directory, a source path filter or a source symbol selector.',
                 $path,
             ),
         );
@@ -183,19 +180,10 @@ final readonly class PositionalPathsClassifier
         return self::KIND_SOURCE;
     }
 
-    /**
-     * \SomeNamespace\Class
-     * \SomeNamespace\Class::method
-     * \SomeNamespace\Class::method::34
-     * App\Foo (bare, unbackslashed)
-     */
-    private static function looksLikeFqcnWithOptionalMethodOrLine(string $value): bool
+    private static function isBareClassName(string $value): bool
     {
-        if (str_starts_with($value, '\\') || str_contains($value, '::')) {
-            return true;
-        }
-
-        return class_exists($value);
+        return !str_contains($value, '\\')
+            && !str_contains($value, '::');
     }
 
     private static function looksLikePathFilter(string $value): bool
