@@ -9,6 +9,8 @@
  */
 namespace SebastianBergmann\CsvParser;
 
+use function count;
+use function get_resources;
 use function iterator_to_array;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -218,6 +220,27 @@ final class ParserTest extends TestCase
                 ),
             ),
         );
+    }
+
+    public function test_Closes_CSV_file_when_line_cannot_be_parsed_according_to_schema(): void
+    {
+        $schema      = Schema::from(FieldDefinition::from(7, 'a', Type::string()));
+        $openStreams = count(get_resources('stream'));
+
+        try {
+            iterator_to_array(
+                (new Parser)->parse(
+                    __DIR__ . '/../fixture/fixture_without_header.csv',
+                    $schema,
+                ),
+            );
+        } catch (OutOfBoundsException $e) {
+            $this->assertCount($openStreams, get_resources('stream'));
+
+            return;
+        }
+
+        $this->fail('OutOfBoundsException was not thrown');
     }
 
     public function test_Cannot_read_from_CSV_file_that_does_not_exist(): void
