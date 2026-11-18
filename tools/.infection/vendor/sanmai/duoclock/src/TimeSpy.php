@@ -21,8 +21,10 @@ declare(strict_types=1);
 namespace DuoClock;
 
 use DateTimeImmutable;
+use DateTimeZone;
 use Override;
 
+use function date_default_timezone_get;
 use function intdiv;
 
 class TimeSpy extends DuoClock
@@ -57,7 +59,7 @@ class TimeSpy extends DuoClock
     public function now(): DateTimeImmutable
     {
         // we do not preserve the microseconds here to keep things simple
-        return new DateTimeImmutable("@{$this->time}");
+        return (new DateTimeImmutable("@{$this->time}"))->setTimezone(new DateTimeZone(date_default_timezone_get()));
     }
 
     #[Override]

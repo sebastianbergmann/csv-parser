@@ -33,21 +33,41 @@
 
 declare(strict_types=1);
 
-namespace Infection\Configuration\SourceFilter;
+namespace Infection\PhpParser\Visitor;
+
+use Infection\Source\Matcher\SourceSymbolMatcher;
+use Override;
+use PhpParser\Node;
+use PhpParser\NodeVisitorAbstract;
 
 /**
- * Wraps raw positional CLI path arguments before they are classified into source
- * and test paths. ConfigurationFactory resolves this into a PlainFilter (source
- * paths) and forwards test paths to testFrameworkExtraArgs.
- *
  * @internal
  */
-final readonly class PositionalPathsFilter implements SourceFileFilter
+final class ExcludeNonSelectedSourceNodesVisitor extends NodeVisitorAbstract
 {
-    /**
-     * @param list<non-empty-string> $paths
-     */
-    public function __construct(public array $paths)
+    public function __construct(
+        private readonly SourceSymbolMatcher $matcher,
+        private readonly CollectSourceSymbolsVisitor $symbols,
+    ) {
+    }
+
+    #[Override]
+    public function enterNode(Node $node): null
     {
+        if (!LabelNodesAsEligibleVisitor::isEligible($node)) {
+            return null;
+        }
+
+        [$class, $method] = $this->symbols->findSelectionContext();
+
+        if (!$this->matcher->matches(
+            $node,
+            $class,
+            $method,
+        )) {
+            LabelNodesAsEligibleVisitor::markAsIneligible($node);
+        }
+
+        return null;
     }
 }
